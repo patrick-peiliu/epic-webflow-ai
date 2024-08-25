@@ -1,23 +1,32 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const dropZone = document.getElementById('dropZone');
+    const urlDropZone = document.getElementById('dropZone');
+    const imageDropZone = document.getElementById('imageDropZone');
+    const imageUpload = document.getElementById('imageUpload');
 
     // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
+    [urlDropZone, imageDropZone].forEach(zone => {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            zone.addEventListener(eventName, preventDefaults, false);
+        });
     });
 
-    // Highlight drop zone when item is dragged over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, highlight, false);
+    // Highlight drop zones when item is dragged over
+    [urlDropZone, imageDropZone].forEach(zone => {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            zone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            zone.addEventListener(eventName, unhighlight, false);
+        });
     });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, unhighlight, false);
-    });
+    // Handle dropped items
+    urlDropZone.addEventListener('drop', handleUrlDrop, false);
+    imageDropZone.addEventListener('drop', handleImageDrop, false);
 
-    // Handle dropped files
-    dropZone.addEventListener('drop', handleDrop, false);
+    // Handle file input change
+    imageUpload.addEventListener('change', handleFileSelect, false);
 
     function preventDefaults(e) {
         e.preventDefault();
@@ -25,29 +34,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function highlight(e) {
-        dropZone.classList.add('highlight');
+        e.currentTarget.classList.add('highlight');
     }
 
     function unhighlight(e) {
-        dropZone.classList.remove('highlight');
+        e.currentTarget.classList.remove('highlight');
     }
-    
-    function handleDrop(e) {
-        // console.log('Drop event triggered');
-        e.preventDefault();
-        
+
+    function handleUrlDrop(e) {
         const dt = e.dataTransfer;
-        // console.log('DataTransfer items:', dt.items.length);
-        // console.log('DataTransfer types:', dt.types);
-    
         if (dt.types.includes('text/uri-list')) {
             dt.items[0].getAsString(function(url) {
-                // console.log('Dropped URL:', url);
+                console.log('Dropped URL:', url);
                 sendImageDataAndRedirect(url, true);
             });
         } else {
-            // console.log('Dropped item is not a URL');
-            alert('Please drop an image URL.');
+            console.log('Dropped item is not a URL');
+            alert('Please drop an image URL here.');
+        }
+    }
+
+    function handleImageDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            handleFiles(files);
+        } else {
+            console.log('No files were dropped');
+            alert('Please drop an image file.');
+        }
+    }
+
+    function handleFileSelect(e) {
+        const files = e.target.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64String = e.target.result.split(',')[1];
+                sendImageDataAndRedirect(base64String, false);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.log('Not an image file');
+            alert('Please select an image file.');
         }
     }
 });
