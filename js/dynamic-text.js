@@ -1,29 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const urlDropZone = document.getElementById('dropZone');
-    const imageDropZone = document.getElementById('imageDropZone');
+    const uploadDropZone = document.getElementById('uploadDropZone');
+    const searchDropZone = document.getElementById('searchDropZone');
     const imageUpload = document.getElementById('imageUpload');
 
-    // Prevent default drag behaviors
-    [urlDropZone, imageDropZone].forEach(zone => {
+    function setupDropZone(dropZone) {
+        // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            zone.addEventListener(eventName, preventDefaults, false);
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
         });
-    });
 
-    // Highlight drop zones when item is dragged over
-    [urlDropZone, imageDropZone].forEach(zone => {
+        // Highlight drop zone when item is dragged over
         ['dragenter', 'dragover'].forEach(eventName => {
-            zone.addEventListener(eventName, highlight, false);
+            dropZone.addEventListener(eventName, highlight, false);
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
-            zone.addEventListener(eventName, unhighlight, false);
+            dropZone.addEventListener(eventName, unhighlight, false);
         });
-    });
 
-    // Handle dropped items
-    urlDropZone.addEventListener('drop', handleUrlDrop, false);
-    imageDropZone.addEventListener('drop', handleImageDrop, false);
+        // Handle dropped items
+        dropZone.addEventListener('drop', handleDrop, false);
+    }
+
+    setupDropZone(uploadDropZone);
+    setupDropZone(searchDropZone);
 
     // Handle file input change
     imageUpload.addEventListener('change', handleFileSelect, false);
@@ -34,36 +35,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function highlight(e) {
-        e.currentTarget.classList.add('highlight');
+        e.target.classList.add('highlight');
     }
-
+    
     function unhighlight(e) {
-        e.currentTarget.classList.remove('highlight');
+        e.target.classList.remove('highlight');
     }
-
-    function handleUrlDrop(e) {
+    
+    function handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        unhighlight(e);
         const dt = e.dataTransfer;
-        if (dt.types.includes('text/uri-list')) {
+        if (dt.types.includes('text/uri-list') || dt.types.includes('text/plain')) {
             dt.items[0].getAsString(function(url) {
                 console.log('Dropped URL:', url);
-                sendImageDataAndRedirect(url, true);
+                if (isValidImageUrl(url)) {
+                    sendImageDataAndRedirect(url, true);
+                } else {
+                    alert('Please drop a valid image URL.');
+                }
             });
+        } else if (dt.files.length > 0) {
+            handleFiles(dt.files);
         } else {
-            console.log('Dropped item is not a URL');
-            alert('Please drop an image URL here.');
+            console.log('Dropped item is not a URL or file');
+            alert('Please drop an image URL or file.');
         }
     }
-
-    function handleImageDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-
-        if (files.length > 0) {
-            handleFiles(files);
-        } else {
-            console.log('No files were dropped');
-            alert('Please drop an image file.');
-        }
+    
+    function isValidImageUrl(url) {
+        return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
     }
 
     function handleFileSelect(e) {
@@ -163,15 +165,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (file.type.startsWith('image/')) {
                 // Compress image if it's larger than 300KB
                 if (file.size > 300 * 1024) {
-
                     const compressedBlob = await compressImage(file, 1920, 1080, 0.7);
                     file = new File([compressedBlob], file.name, { type: 'image/jpeg' });
-
                 }
     
                 const reader = new FileReader();
                 reader.onload = function(e) {
-
                     const base64String = e.target.result.split(',')[1];
                     sendImageDataAndRedirect(base64String, false);
                 };
@@ -212,42 +211,28 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
           };
 
     try {
-        
-        let responseData;
-        try {
-            const response = await fetch(uploadEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(uploadRequestBody)
-            });
+        const response = await fetch(uploadEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(uploadRequestBody)
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            responseData = await response.json();
-        } catch (fetchError) {
-            console.warn('Fetch error occurred, but continuing execution:', fetchError);
-            // If responseData is undefined here, it means the fetch truly failed
-            if (!responseData) {
-                throw fetchError;  // Re-throw if we don't have data
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-     
-        if (responseData && responseData.result) {
-            // Store the response in localStorage
-            localStorage.setItem('searchResults', JSON.stringify(responseData));
 
-            // Redirect to the search results page
-            window.location.href = 'search-results.html';
+        const responseData = await response.json();
+        if (responseData && responseData.result) {
+            localStorage.setItem('searchResults', JSON.stringify(responseData));
+            window.location.href = 'search-results.html'; // Make sure this path is correct
+            // window.location.href = '/search-results'; // Update this URL to match your Webflow page slug
         } else {
             throw new Error('Invalid or missing response data');
         }
     } catch (error) {
         console.error(`Error in sendImageDataAndRedirect:`, error);
-        console.error('Error details:', error.stack);
         alert(`Error processing request: ${error.message}`);
     }
 }
