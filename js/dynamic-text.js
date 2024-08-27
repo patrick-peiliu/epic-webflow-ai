@@ -1,3 +1,24 @@
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+function getCachedData(key) {
+    const cachedData = localStorage.getItem(key);
+    if (cachedData) {
+        const { timestamp, data } = JSON.parse(cachedData);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+            return data;
+        }
+    }
+    return null;
+}
+
+function setCachedData(key, data) {
+    const cacheObject = {
+        timestamp: Date.now(),
+        data: data
+    };
+    localStorage.setItem(key, JSON.stringify(cacheObject));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const uploadDropZone = document.getElementById('uploadDropZone');
     const searchDropZone = document.getElementById('searchDropZone');
@@ -195,8 +216,11 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
         ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
         : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageSearch';
 
-        localStorage.setItem('lastSearchImage', data);
-        localStorage.setItem('isImageUrl', isUrl.toString());    
+    localStorage.setItem('lastSearchImage', data);
+    localStorage.setItem('isImageUrl', isUrl.toString());
+
+    // Clear previous search results
+    localStorage.removeItem('searchResults');
 
     // Prepare the request body
     const requestBody = isUrl
@@ -243,6 +267,12 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
 
 // Function to fetch top keywords
 async function fetchTopKeywords() {
+    const cachedKeywords = getCachedData('topKeywords');
+    if (cachedKeywords) {
+        displayTopKeywords(cachedKeywords);
+        return;
+    }
+
     const topKeywordEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/topKeyword';
     try {
         const requestBody = {
@@ -262,31 +292,16 @@ async function fetchTopKeywords() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const responseText = await response.text();
-        // console.log('Raw response:', responseText);
-
-        if (!responseText) {
-            throw new Error('Empty response received');
-        }
-
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (parseError) {
-            console.error('Error parsing JSON:', parseError);
-            throw new Error('Invalid JSON in response');
-        }
-
+        const data = await response.json();
         if (!data.result || !data.result.result) {
             throw new Error('Unexpected response structure');
         }
 
         const result = JSON.parse(data.result.result);
+        setCachedData('topKeywords', result);
         displayTopKeywords(result);
-
     } catch (error) {
         console.error('Error fetching top keywords:', error);
-        // Handle the error gracefully in the UI
         displayErrorMessage('Please try again later.');
     }
 }
@@ -325,14 +340,13 @@ function displayTopKeywords(data) {
     });
 }
 
-// Call fetchTopKeywords on page load
-document.addEventListener('DOMContentLoaded', fetchTopKeywords);
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetchAndPopulateGallery();
-});
-
 async function fetchAndPopulateGallery() {
+    const cachedGallery = getCachedData('galleryItems');
+    if (cachedGallery) {
+        populateGallery(cachedGallery);
+        return;
+    }
+
     const recommendEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/recommend';
     const requestBody = {
         "beginPage": 1,
@@ -355,27 +369,8 @@ async function fetchAndPopulateGallery() {
 
         const data = await response.json();
         const galleryItems = data.result.result;
-
-        const galleryContainer = document.getElementById('gallery-container');
-        if (galleryContainer) {
-            galleryContainer.innerHTML = ''; // Clear existing content
-
-            galleryItems.forEach((item, index) => {
-                const galleryItem = document.createElement('div');
-                galleryItem.className = 'gallery-item';
-                
-                const img = document.createElement('img');
-                img.src = item.imageUrl || 'images/placeholder-image.png';
-                img.alt = item.subjectTrans;
-                img.loading = 'lazy';
-
-                galleryItem.appendChild(img);
-                galleryContainer.appendChild(galleryItem);
-            });
-        } else {
-            console.error('Gallery container not found');
-        }
-
+        setCachedData('galleryItems', galleryItems);
+        populateGallery(galleryItems);
     } catch (error) {
         console.error('Error fetching gallery items:', error);
         const galleryContainer = document.getElementById('gallery-container');
@@ -384,3 +379,31 @@ async function fetchAndPopulateGallery() {
         }
     }
 }
+
+function populateGallery(galleryItems) {
+    const galleryContainer = document.getElementById('gallery-container');
+    if (galleryContainer) {
+        galleryContainer.innerHTML = ''; // Clear existing content
+
+        galleryItems.forEach((item, index) => {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            
+            const img = document.createElement('img');
+            img.src = item.imageUrl || 'images/placeholder-image.png';
+            img.alt = item.subjectTrans;
+            img.loading = 'lazy';
+
+            galleryItem.appendChild(img);
+            galleryContainer.appendChild(galleryItem);
+        });
+    } else {
+        console.error('Gallery container not found');
+    }
+}
+
+// Call these functions when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetchTopKeywords();
+    fetchAndPopulateGallery();
+});

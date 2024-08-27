@@ -7,27 +7,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsCountElement = document.getElementById('resultsCount');
     const searchResultsString = localStorage.getItem('searchResults');
 
-    if (searchResultsString && resultsCountElement) {
+    if (searchResultsString) {
         try {
             const searchResults = JSON.parse(searchResultsString);
             if (searchResults.result && searchResults.result.result && searchResults.result.result.data) {
                 displayResults(searchResults.result.result);
             } else {
-                productGrid.innerHTML = '<p>Invalid search results structure.</p>';
+                showNoResultsMessage();
             }
         } catch (error) {
             console.error('Error parsing search results:', error);
-            productGrid.innerHTML = '<p>Error displaying search results.</p>';
+            showNoResultsMessage();
         }
     } else {
-        productGrid.innerHTML = '<p>No search results available.</p>';
+        showNoResultsMessage();
     }
 
     // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
-
-    // Clear the localStorage after displaying the results
-    localStorage.removeItem('searchResults');
 });
 
 function displayResults(results) {
@@ -76,6 +73,12 @@ function handleScroll() {
 }
 
 async function loadMoreResults() {
+    if (!localStorage.getItem('lastSearchImage')) {
+        console.log('No previous search data available');
+        hasMoreResults = false;
+        return;
+    }
+
     isLoading = true;
     currentPage++;
 
