@@ -1,17 +1,16 @@
-.product-grid {
+/* <--------------- search results page css ---------------->*/
+.w-layout-hflex.grid-products {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* Change to 4 columns */
   gap: 20px;
-  padding: 20px;
 }
 
 .card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  width: 100%; /* Ensure the card takes full width of its grid cell */
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 10px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -27,16 +26,13 @@
 }
 
 .card-content {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  padding: 15px;
 }
 
 .product-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   /* Limit to 2 lines */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -46,10 +42,43 @@
 
 .product-price {
   font-size: 18px;
-  /* color: #4935e5; */
   font-weight: bold;
-  margin-top: auto;
+  color: #ff4400;
 }
+
+/* Media query for tablet */
+@media screen and (max-width: 991px) {
+  .w-layout-hflex.grid-products {
+      grid-template-columns: repeat(3, 1fr); /* 3 columns for tablets */
+  }
+}
+
+/* Media query for mobile portrait */
+@media screen and (max-width: 767px) {
+  .w-layout-hflex.grid-products {
+    grid-template-columns: 1fr; /* Single column for mobile */
+}
+
+.card {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+  .card-content {
+      padding: 10px;
+  }
+
+  .product-title {
+      font-size: 16px;
+      margin-bottom: 5px;
+  }
+
+  .product-price {
+      font-size: 18px;
+  }
+}
+
+/* <--------------- Index page css ---------------->*/
 
 #uploadDropZone.drag-over, #searchDropZone.drag-over {
   border: 2px dashed #fff;

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const resultsCountElement = document.getElementById('resultsCount');
     const productGrid = document.getElementById('productGrid');
+    const resultsCountElement = document.getElementById('resultsCount');
     const searchResultsString = localStorage.getItem('searchResults');
 
     if (searchResultsString && resultsCountElement) {
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         `;
                         productGrid.appendChild(productCard);
-                        resultsCountElement.textContent = `Displaying ${products.length} of ${totalRecords} results`;
                     });
+                    resultsCountElement.textContent = `Displaying ${products.length} of ${totalRecords} results`;
                 } else {
                     productGrid.innerHTML = '<p>No results found.</p>';
                 }
