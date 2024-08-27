@@ -195,19 +195,23 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
         ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
         : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageSearch';
 
-    const uploadRequestBody = isUrl
+        localStorage.setItem('lastSearchImage', data);
+        localStorage.setItem('isImageUrl', isUrl.toString());    
+
+    // Prepare the request body
+    const requestBody = isUrl
         ? {
-            "imageAddress": data,
-            "beginPage": 1,
-            "pageSize": 10,
-            "country": "en",
-            "imageId": "0"
+            imageAddress: data,
+            beginPage: 1,
+            pageSize: 10,
+            country: "en",
+            imageId: "0"
           }
         : {
-            "base64Image": data,
-            "beginPage": 1,
-            "pageSize": 10,
-            "country": "en"
+            base64Image: data,
+            beginPage: 1,
+            pageSize: 10,
+            country: "en"
           };
 
     try {
@@ -216,7 +220,7 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(uploadRequestBody)
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
@@ -227,7 +231,7 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
         if (responseData && responseData.result) {
             localStorage.setItem('searchResults', JSON.stringify(responseData));
             window.location.href = 'search-results.html'; // Make sure this path is correct
-            // window.location.href = '/search-results'; // Update this URL to match your Webflow page slug
+            // window.location.href = '/search-results'; 
         } else {
             throw new Error('Invalid or missing response data');
         }
