@@ -130,3 +130,30 @@ async function loadMoreResults() {
         isLoading = false;
     }
 }
+
+function createProductCard(item) {
+    const productCard = document.createElement('div');
+    productCard.className = 'card';
+    productCard.innerHTML = `
+        <div class="card-image-container">
+            <img src="${item.imageUrl}" loading="lazy" alt="${item.subjectTrans || 'Product Image'}" />
+        </div>
+        <div class="card-content">
+            <h3 class="product-title">${item.subjectTrans || 'Product'}</h3>
+            <p class="product-price">¥${item.priceInfo.price || 'Price not available'}</p>
+        </div>
+    `;
+
+    productCard.addEventListener('click', () => {
+        redirectToProductPage(item);
+    });
+
+    return productCard;
+}
+
+function redirectToProductPage(productDetails) {
+    // Store the product details in localStorage
+    localStorage.setItem('currentProductDetails', JSON.stringify(productDetails));
+    // Redirect to the product page
+    window.location.href = 'product.html';
+}
