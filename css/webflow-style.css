@@ -80,6 +80,30 @@
 
 /* <--------------- Index page css ---------------->*/
 
+.loop-animation-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.loop-holder {
+  display: flex;
+  white-space: nowrap;
+}
+
+@keyframes scrollKeywords {
+  0% {
+      transform: translateX(0);
+  }
+  100% {
+      transform: translateX(-50%);
+  }
+}
+
+.div-button {
+  flex-shrink: 0;
+  margin-right: 10px; /* Adjust spacing between keywords */
+}
+
 #uploadDropZone.drag-over, #searchDropZone.drag-over {
   border: 2px dashed #fff;
   background-color: rgba(255, 255, 255, 0.1);

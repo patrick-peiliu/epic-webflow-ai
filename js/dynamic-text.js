@@ -323,21 +323,36 @@ function displayErrorMessage(message) {
 
 // Function to display top keywords
 function displayTopKeywords(data) {
-    // Get all elements with the class 'text-btn-look'
-    const textElements = document.querySelectorAll('.text-btn-look');
+    const loopHolder = document.querySelector('.loop-holder');
+    if (!loopHolder) {
+        console.error('Loop holder element not found.');
+        return;
+    }
 
+    const textElements = loopHolder.querySelectorAll('.text-btn-look');
     if (!textElements.length) {
         console.error('No elements with class "text-btn-look" found.');
         return;
     }
 
-    // Update the text content of each element with the corresponding 'seKeywordTranslation'
+    // Update existing elements
     textElements.forEach((element, index) => {
-        if (data[index] && data[index].seKeywordTranslation) {
-            element.textContent = data[index].seKeywordTranslation;
-            // console.log(`Updated element ${index}:`, element);
+        if (data[index % data.length] && data[index % data.length].seKeywordTranslation) {
+            element.textContent = data[index % data.length].seKeywordTranslation;
         }
     });
+
+    // Clone elements to ensure smooth looping
+    const elementsToClone = Array.from(loopHolder.children);
+    elementsToClone.forEach(element => {
+        loopHolder.appendChild(element.cloneNode(true));
+    });
+
+    // Set up the animation
+    loopHolder.style.display = 'flex';
+    loopHolder.style.animation = 'none'; // Reset animation
+    loopHolder.offsetHeight; // Trigger reflow
+    loopHolder.style.animation = 'scrollKeywords 30s linear infinite';
 }
 
 async function fetchAndPopulateGallery() {
