@@ -156,4 +156,5 @@ function redirectToProductPage(productDetails) {
     localStorage.setItem('currentProductDetails', JSON.stringify(productDetails));
     // Redirect to the product page
     window.location.href = 'product.html';
+    // window.location.href = '/product';
 }

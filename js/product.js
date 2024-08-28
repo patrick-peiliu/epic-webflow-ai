@@ -1,32 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     const productDetailsString = localStorage.getItem('currentProductDetails');
 
     if (productDetailsString) {
         try {
             const productDetails = JSON.parse(productDetailsString);
             displayBasicProductInfo(productDetails);
-            showLoadingState();
             if (productDetails.offerId) {
                 fetchProductDetails(productDetails.offerId);
             } else {
                 console.error('No offerId found in product details');
-                hideLoadingState();
-                showErrorMessage('Error loading full product details. Some information may be missing.');
             }
         } catch (error) {
             console.error('Error parsing product details:', error);
-            showErrorMessage('Error loading product details. Please try again.');
         }
     } else {
         console.error('No product details found in localStorage');
-        showErrorMessage('Product details not found. Please return to the search page.');
     }
 });
 
 function displayBasicProductInfo(productDetails) {
 
     // Update the product title
-    const titleElement = document.getElementById('h1 _24-28');
+    const titleElement = document.getElementById('h1_24-28');
     if (titleElement) {
         titleElement.textContent = productDetails.subjectTrans || '';
     }
@@ -36,30 +31,6 @@ function displayBasicProductInfo(productDetails) {
     if (mainImageElement) {
         mainImageElement.src = productDetails.imageUrl || '';
         mainImageElement.alt = productDetails.subjectTrans || '';
-    }
-}
-
-function showLoadingState() {
-    const loadingElement = document.getElementById('loading-message');
-    if (loadingElement) {
-        loadingElement.style.display = 'block';
-    }
-    // Optionally, you can disable certain elements or add a loading overlay here
-}
-
-function hideLoadingState() {
-    const loadingElement = document.getElementById('loading-message');
-    if (loadingElement) {
-        loadingElement.style.display = 'none';
-    }
-    // Optionally, re-enable elements or remove the loading overlay here
-}
-
-function showErrorMessage(message) {
-    const errorElement = document.getElementById('error-message');
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
     }
 }
 
@@ -88,19 +59,18 @@ async function fetchProductDetails(offerId) {
             displayFullProductDetails(data.result.result);
         } else {
             console.error('Invalid product details response');
-            showErrorMessage('Error loading full product details. Some information may be missing.');
         }
     } catch (error) {
         console.error('Error fetching product details:', error);
-        showErrorMessage('Error loading full product details. Some information may be missing.');
-    } finally {
-        hideLoadingState();
+        if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+            console.error('This might be due to a CORS issue or network problem.');
+        }
     }
 }
 
 function displayFullProductDetails(productDetails) {
     // Update additional images if available
-    const additionalImagesContainerVar = document.getElementById('product-image-additional variables');
+    const additionalImagesContainerVar = document.getElementById('product-image-additional-variables');
     if (additionalImagesContainerVar && productDetails.productImage && productDetails.productImage.images.length > 1) {
         additionalImagesContainerVar.innerHTML = ''; // Clear existing content
         for (let i = 1; i < Math.min(productDetails.productImage.images.length, 4); i++) {
