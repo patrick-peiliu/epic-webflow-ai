@@ -127,48 +127,59 @@ function displayFullProductDetails(productDetails) {
     
     if (additionalImagesContainerVar && productDetails.productSkuInfos && productDetails.productSkuInfos.length > 0) {
         additionalImagesContainerVar.innerHTML = ''; // Clear existing content
-        
-        productDetails.productSkuInfos.forEach((skuInfo, index) => {
-            const specContainer = document.createElement('div');
-            specContainer.className = 'spec-container';
-            if (index === 0) specContainer.classList.add('selected'); 
-            
-            const imgContainer = document.createElement('div');
-            imgContainer.className = 'spec-image-container';
-            
-            const skuImageUrl = skuInfo.skuAttributes.find(attr => attr.skuImageUrl)?.skuImageUrl;
-            const valueTrans = skuInfo.skuAttributes.find(attr => attr.valueTrans)?.valueTrans;
-            
-            if (skuImageUrl) {
-                const imgElement = document.createElement('img');
-                imgElement.src = skuImageUrl;
-                imgElement.alt = valueTrans || `Spec ${index + 1}`;
-                imgElement.className = 'spec-image';
-                imgContainer.appendChild(imgElement);
-            } else {
-                imgContainer.classList.add('no-image');
-            }
-            
-            specContainer.appendChild(imgContainer);
-            
-            if (valueTrans) {
-                const pElement = document.createElement('p');
-                pElement.className = 'spec-text';
-                pElement.textContent = valueTrans;
-                specContainer.appendChild(pElement);
-            }
-
-            // Add click event listener to highlight the selected spec
-            specContainer.addEventListener('click', function() {
-                // Remove 'selected' class from all spec containers
-                additionalImagesContainerVar.querySelectorAll('.spec-container').forEach(container => {
-                    container.classList.remove('selected');
+    
+        for (let i = 0; i < productDetails.productSkuInfos.length; i += 6) {
+            const rowContainer = document.createElement('div');
+            rowContainer.className = 'spec-row';
+            additionalImagesContainerVar.appendChild(rowContainer);
+    
+            for (let j = i; j < Math.min(i + 6, productDetails.productSkuInfos.length); j++) {
+                const skuInfo = productDetails.productSkuInfos[j];
+                const specContainer = document.createElement('div');
+                specContainer.className = 'spec-container';
+                if (j === 0) specContainer.classList.add('selected');
+    
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'spec-image-container';
+    
+                const skuImageUrl = skuInfo.skuAttributes.find(attr => attr.skuImageUrl)?.skuImageUrl;
+                const valueTrans = skuInfo.skuAttributes.find(attr => attr.valueTrans)?.valueTrans;
+    
+                if (skuImageUrl) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = skuImageUrl;
+                    imgElement.alt = valueTrans || `Spec ${j + 1}`;
+                    imgElement.className = 'spec-image';
+                    imgContainer.appendChild(imgElement);
+                } else {
+                    imgContainer.classList.add('no-image');
+                }
+    
+                specContainer.appendChild(imgContainer);
+    
+                if (valueTrans) {
+                    const pElement = document.createElement('p');
+                    pElement.className = 'spec-text';
+                    pElement.textContent = valueTrans;
+                    specContainer.appendChild(pElement);
+                }
+    
+                specContainer.addEventListener('click', function () {
+                    additionalImagesContainerVar.querySelectorAll('.spec-container').forEach(container => {
+                        container.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
                 });
-                // Add 'selected' class to the clicked spec container
-                this.classList.add('selected');
-            });
-            
-            additionalImagesContainerVar.appendChild(specContainer);
-        });
+    
+                rowContainer.appendChild(specContainer);
+            }
+    
+            // Add placeholder elements to maintain layout if less than 6 items in a row
+            for (let k = productDetails.productSkuInfos.length % 6; k < 6 && k !== 0; k++) {
+                const placeholderContainer = document.createElement('div');
+                placeholderContainer.className = 'spec-container placeholder';
+                rowContainer.appendChild(placeholderContainer);
+            }
+        }
     }
 }

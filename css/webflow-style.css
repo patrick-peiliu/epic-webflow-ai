@@ -19,40 +19,50 @@
 
 #product-image-additional-variables {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 10px;
-  overflow-x: auto;
-  padding: 10px 0;
+  padding: 10px;
+  width: 100%;
+  max-width: 700px; /* Adjust this value as needed */
+  max-height: 300px; /* Adjust this value as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.spec-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  width: 100%;
 }
 
 .spec-container {
+  flex: 0 0 calc(16.666% - 8.5px); /* (100% - 5 * 10px gap) / 6 */
+  max-width: calc(16.666% - 8.5px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80px;
   cursor: pointer;
 }
 
 .spec-image-container {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  padding-top: 100%; /* Creates a square aspect ratio */
+  position: relative;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .spec-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.no-image {
-  background-color: #f0f0f0;
 }
 
 .spec-text {
@@ -61,19 +71,47 @@
   text-align: center;
   color: #333;
   font-weight: bold;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .spec-container.selected .spec-image-container {
-  border-color: #ffd700; /* Golden color for the selected item */
+  border-color: #ffd700;
   box-shadow: 0 0 0 2px #ffd700;
 }
 
-.spec-container.selected .spec-text {
-  font-weight: bold;
+/* Scrollbar styles */
+#product-image-additional-variables::-webkit-scrollbar {
+  width: 8px;
 }
 
-.spec-container:hover .spec-image-container {
-  border-color: #ccc;
+#product-image-additional-variables::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+#product-image-additional-variables::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+#product-image-additional-variables::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media (max-width: 768px) {
+  .spec-container {
+      flex: 0 0 calc(33.333% - 6.67px); /* 3 items per row on smaller screens */
+      max-width: calc(33.333% - 6.67px);
+  }
+}
+
+@media (max-width: 480px) {
+  .spec-container {
+      flex: 0 0 calc(50% - 5px); /* 2 items per row on very small screens */
+      max-width: calc(50% - 5px);
+  }
 }
 
 /* <--------------- search results page css ---------------->*/
