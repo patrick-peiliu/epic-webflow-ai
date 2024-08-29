@@ -62,9 +62,6 @@ async function fetchProductDetails(offerId) {
         }
     } catch (error) {
         console.error('Error fetching product details:', error);
-        if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-            console.error('This might be due to a CORS issue or network problem.');
-        }
     }
 }
 

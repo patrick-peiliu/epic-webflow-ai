@@ -3,8 +3,6 @@ let isLoading = false;
 let hasMoreResults = true;
 
 document.addEventListener('DOMContentLoaded', function() {
-    const productGrid = document.getElementById('productGrid');
-    const resultsCountElement = document.getElementById('resultsCount');
     const searchResultsString = localStorage.getItem('searchResults');
 
     if (searchResultsString) {
@@ -13,14 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (searchResults.result && searchResults.result.result && searchResults.result.result.data) {
                 displayResults(searchResults.result.result);
             } else {
-                showNoResultsMessage();
+                console.log('No results found');
             }
         } catch (error) {
             console.error('Error parsing search results:', error);
-            showNoResultsMessage();
         }
     } else {
-        showNoResultsMessage();
+        console.log('No search results in localStorage');
     }
 
     // Add scroll event listener
@@ -30,15 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
 function displayResults(results) {
     const productGrid = document.getElementById('productGrid');
     const resultsCountElement = document.getElementById('resultsCount');
-    const products = results.data;
-    const totalRecords = results.totalRecords;
+    const products = results.data || [];
+    const totalRecords = results.totalRecords || 0;
 
     if (products.length > 0) {
         products.forEach(item => {
             const productCard = createProductCard(item);
             productGrid.appendChild(productCard);
         });
-        resultsCountElement.textContent = `Displaying ${productGrid.children.length} of ${totalRecords} results`;
+        if (resultsCountElement) {
+            resultsCountElement.textContent = `Displaying ${productGrid.children.length} of ${totalRecords} results`;
+        }
+        hasMoreResults = productGrid.children.length < totalRecords;
     } else if (currentPage === 1) {
         productGrid.innerHTML = '<p>No results found.</p>';
     }
