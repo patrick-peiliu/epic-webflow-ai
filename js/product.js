@@ -127,53 +127,58 @@ function displayFullProductDetails(productDetails) {
     
     if (additionalImagesContainerVar && productDetails.productSkuInfos && productDetails.productSkuInfos.length > 0) {
         additionalImagesContainerVar.innerHTML = ''; // Clear existing content
-    
+
         for (let i = 0; i < productDetails.productSkuInfos.length; i += 6) {
             const rowContainer = document.createElement('div');
             rowContainer.className = 'spec-row';
             additionalImagesContainerVar.appendChild(rowContainer);
-    
+
             for (let j = i; j < Math.min(i + 6, productDetails.productSkuInfos.length); j++) {
                 const skuInfo = productDetails.productSkuInfos[j];
                 const specContainer = document.createElement('div');
                 specContainer.className = 'spec-container';
                 if (j === 0) specContainer.classList.add('selected');
-    
+
                 const imgContainer = document.createElement('div');
                 imgContainer.className = 'spec-image-container';
-    
+
                 const skuImageUrl = skuInfo.skuAttributes.find(attr => attr.skuImageUrl)?.skuImageUrl;
-                const valueTrans = skuInfo.skuAttributes.find(attr => attr.valueTrans)?.valueTrans;
-    
+                const valueTransArray = skuInfo.skuAttributes
+                    .filter(attr => attr.valueTrans)
+                    .map(attr => attr.valueTrans);
+                const valueTrans = valueTransArray.join(' - ');
+
                 if (skuImageUrl) {
                     const imgElement = document.createElement('img');
                     imgElement.src = skuImageUrl;
                     imgElement.alt = valueTrans || `Spec ${j + 1}`;
                     imgElement.className = 'spec-image';
+                    imgElement.title = valueTrans; // Add title attribute for tooltip
                     imgContainer.appendChild(imgElement);
                 } else {
                     imgContainer.classList.add('no-image');
                 }
-    
+
                 specContainer.appendChild(imgContainer);
-    
+
                 if (valueTrans) {
                     const pElement = document.createElement('p');
                     pElement.className = 'spec-text';
                     pElement.textContent = valueTrans;
+                    pElement.title = valueTrans; // Add title attribute to show full text on hover
                     specContainer.appendChild(pElement);
                 }
-    
+
                 specContainer.addEventListener('click', function () {
                     additionalImagesContainerVar.querySelectorAll('.spec-container').forEach(container => {
                         container.classList.remove('selected');
                     });
                     this.classList.add('selected');
                 });
-    
+
                 rowContainer.appendChild(specContainer);
             }
-    
+
             // Add placeholder elements to maintain layout if less than 6 items in a row
             for (let k = productDetails.productSkuInfos.length % 6; k < 6 && k !== 0; k++) {
                 const placeholderContainer = document.createElement('div');
@@ -181,5 +186,40 @@ function displayFullProductDetails(productDetails) {
                 rowContainer.appendChild(placeholderContainer);
             }
         }
+    }
+
+    // Update product attributes
+    if (productDetails.productAttribute && productDetails.productAttribute.length > 0) {
+        const detailsContainer = document.querySelector('.details-grid');
+        detailsContainer.innerHTML = ''; // Clear existing content
+
+        productDetails.productAttribute.forEach((attribute) => {
+            const detailBlock = document.createElement('div');
+            detailBlock.className = 'details-block';
+            
+            const existingBlock = Array.from(detailsContainer.children).find(block => {
+                return block.querySelector('.div-align-left p').textContent.trim().toLowerCase() === (attribute.attributeNameTrans + ':').toLowerCase();
+            });
+
+            let rightPContent = attribute.valueTrans;
+
+            if (existingBlock && attribute.attributeId) {
+                const existingRightP = existingBlock.querySelector('.div-align-right p');
+                rightPContent = existingRightP.textContent.trim() + ', ' + attribute.valueTrans;
+                existingBlock.remove(); // Remove the existing block as we'll add an updated one
+            }
+
+            detailBlock.innerHTML = `
+                <div class="w-layout-hflex description-line-details">
+                    <div class="div-align-left">
+                        <p class="p-16-20">${attribute.attributeNameTrans}:</p>
+                    </div>
+                    <div class="div-align-right">
+                        <p class="p-16-20 bold">${rightPContent}</p>
+                    </div>
+                </div>
+            `;
+            detailsContainer.appendChild(detailBlock);
+        });
     }
 }
