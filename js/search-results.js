@@ -1,10 +1,23 @@
+// Global variables
 let currentPage = 1;
 let isLoading = false;
 let hasMoreResults = true;
+let currentSortOption = 'relevant';
 
-document.addEventListener('DOMContentLoaded', function() {
+// Main initialization function
+function initializeSearchResults() {
+    loadInitialResults();
+    // Wait for the DOM to be fully loaded before setting up event listeners
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupEventListeners);
+    } else {
+        setupEventListeners();
+    }
+}
+
+// Load initial results from localStorage
+function loadInitialResults() {
     const searchResultsString = localStorage.getItem('searchResults');
-
     if (searchResultsString) {
         try {
             const searchResults = JSON.parse(searchResultsString);
@@ -19,46 +32,49 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('No search results in localStorage');
     }
-
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll);
-});
-
-function displayResults(results) {
-    const productGrid = document.getElementById('productGrid');
-    const resultsCountElement = document.getElementById('resultsCount');
-    const products = results.data || [];
-    const totalRecords = results.totalRecords || 0;
-
-    if (products.length > 0) {
-        products.forEach(item => {
-            const productCard = createProductCard(item);
-            productGrid.appendChild(productCard);
-        });
-        if (resultsCountElement) {
-            resultsCountElement.textContent = `Displaying ${productGrid.children.length} of ${totalRecords} results`;
-        }
-        hasMoreResults = productGrid.children.length < totalRecords;
-    } else if (currentPage === 1) {
-        productGrid.innerHTML = '<p>No results found.</p>';
-    }
-
-    hasMoreResults = productGrid.children.length < totalRecords;
 }
 
-function createProductCard(item) {
-    const productCard = document.createElement('div');
-    productCard.className = 'card';
-    productCard.innerHTML = `
-        <div class="card-image-container">
-            <img src="${item.imageUrl}" loading="lazy" alt="${item.subjectTrans || 'Product Image'}" />
-        </div>
-        <div class="card-content">
-            <h3 class="product-title">${item.subjectTrans || 'Product'}</h3>
-            <p class="product-price">¥${item.priceInfo.price || 'Price not available'}</p>
-        </div>
-    `;
-    return productCard;
+// Setup event listeners
+function setupEventListeners() {
+    window.addEventListener('scroll', handleScroll);
+    setupSortButtons();
+}
+
+// Setup sort buttons
+function setupSortButtons() {
+    const relevantButton = document.querySelector('#relevant-button .button-primary');
+    const priceAscButton = document.querySelector('#price-asc-button .button-primary');
+    const priceDescButton = document.querySelector('#price-desc-button .button-primary');
+
+    if (relevantButton && priceAscButton && priceDescButton) {
+        relevantButton.addEventListener('click', (e) => handleSortButtonClick(e, 'relevant', relevantButton));
+        priceAscButton.addEventListener('click', (e) => handleSortButtonClick(e, 'priceAsc', priceAscButton));
+        priceDescButton.addEventListener('click', (e) => handleSortButtonClick(e, 'priceDesc', priceDescButton));
+    } else {
+        console.error('One or more sort buttons not found in the DOM');
+    }
+}
+
+// Handle sort button click
+function handleSortButtonClick(e, sortOption, button) {
+    e.preventDefault();
+    if (currentSortOption !== sortOption) {
+        currentSortOption = sortOption;
+        updateButtonStyles(button);
+        currentPage = 1; // Reset to first page
+        loadMoreResults(true);
+    }
+}
+
+// Update button styles
+function updateButtonStyles(selectedButton) {
+    const buttons = document.querySelectorAll('.tags-grid .button-primary');
+    buttons.forEach(button => {
+        button.classList.remove('inverted');
+        button.classList.add('inactive');
+    });
+    selectedButton.classList.remove('inactive');
+    selectedButton.classList.add('inverted');
 }
 
 function handleScroll() {
@@ -72,7 +88,14 @@ function handleScroll() {
     }
 }
 
-async function loadMoreResults() {
+async function loadMoreResults(newSearch = false) {
+    if (newSearch) {
+        currentPage = 1;
+        // Clear existing results here
+    } else {
+        currentPage++; // Increment the page number for subsequent requests
+    }
+
     if (!localStorage.getItem('lastSearchImage')) {
         console.log('No previous search data available');
         hasMoreResults = false;
@@ -80,7 +103,6 @@ async function loadMoreResults() {
     }
 
     isLoading = true;
-    currentPage++;
 
     const isImageUrl = localStorage.getItem('isImageUrl') === 'true';
     const imageData = localStorage.getItem('lastSearchImage');
@@ -89,7 +111,7 @@ async function loadMoreResults() {
         ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
         : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageSearch';
 
-    const requestBody = isImageUrl
+    let requestBody = isImageUrl
         ? {
             imageAddress: imageData,
             beginPage: currentPage,
@@ -103,6 +125,13 @@ async function loadMoreResults() {
             pageSize: 10,
             country: "en"
           };
+
+    // Add sort parameter based on currentSortOption
+    if (currentSortOption === 'priceAsc') {
+        requestBody.sort = JSON.stringify({ price: "asc" });
+    } else if (currentSortOption === 'priceDesc') {
+        requestBody.sort = JSON.stringify({ price: "desc" });
+    }
 
     try {
         const response = await fetch(uploadEndpoint, {
@@ -119,7 +148,7 @@ async function loadMoreResults() {
 
         const data = await response.json();
         if (data && data.result && data.result.result) {
-            displayResults(data.result.result);
+            displayResults(data.result.result, newSearch);
         } else {
             hasMoreResults = false;
         }
@@ -128,6 +157,30 @@ async function loadMoreResults() {
         hasMoreResults = false;
     } finally {
         isLoading = false;
+    }
+}
+
+function displayResults(results, newSearch) {
+    const productGrid = document.getElementById('productGrid');
+    const resultsCountElement = document.getElementById('resultsCount');
+    const products = results.data || [];
+    const totalRecords = results.totalRecords || 0;
+
+    if (newSearch) {
+        productGrid.innerHTML = ''; // Clear existing results
+    }
+
+    if (products.length > 0) {
+        products.forEach(item => {
+            const productCard = createProductCard(item);
+            productGrid.appendChild(productCard);
+        });
+        if (resultsCountElement) {
+            resultsCountElement.textContent = `Displaying ${productGrid.children.length} of ${totalRecords} results`;
+        }
+        hasMoreResults = productGrid.children.length < totalRecords;
+    } else if (newSearch) {
+        productGrid.innerHTML = '<p>No results found.</p>';
     }
 }
 
@@ -158,3 +211,6 @@ function redirectToProductPage(productDetails) {
     window.location.href = 'product.html';
     // window.location.href = '/product';
 }
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', initializeSearchResults);
