@@ -223,3 +223,14 @@ function displayFullProductDetails(productDetails) {
         });
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const formatButtons = document.querySelectorAll('.format-button');
+    
+    formatButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            formatButtons.forEach(btn => btn.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+});
