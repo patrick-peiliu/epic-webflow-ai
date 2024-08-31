@@ -96,7 +96,11 @@ async function loadMoreResults(newSearch = false) {
         currentPage++; // Increment the page number for subsequent requests
     }
 
-    if (!localStorage.getItem('lastSearchImage')) {
+    const isImageUrl = localStorage.getItem('isImageUrl') === 'true';
+    const imageId = localStorage.getItem('imageId');
+    const imageAddress = isImageUrl ? localStorage.getItem('lastSearchImage') : null;
+
+    if (!imageId && !imageAddress) {
         console.log('No previous search data available');
         hasMoreResults = false;
         return;
@@ -104,27 +108,20 @@ async function loadMoreResults(newSearch = false) {
 
     isLoading = true;
 
-    const isImageUrl = localStorage.getItem('isImageUrl') === 'true';
-    const imageData = localStorage.getItem('lastSearchImage');
+    const uploadEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
 
-    const uploadEndpoint = isImageUrl 
-        ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
-        : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageSearch';
+    let requestBody = {
+        beginPage: currentPage,
+        pageSize: 20,
+        country: "en"
+    };
 
-    let requestBody = isImageUrl
-        ? {
-            imageAddress: imageData,
-            beginPage: currentPage,
-            pageSize: 10,
-            country: "en",
-            imageId: "0"
-          }
-        : {
-            base64Image: imageData,
-            beginPage: currentPage,
-            pageSize: 10,
-            country: "en"
-          };
+    if (isImageUrl) {
+        requestBody.imageAddress = imageAddress;
+        requestBody.imageId = "0";
+    } else {
+        requestBody.imageId = imageId;
+    }
 
     // Add sort parameter based on currentSortOption
     if (currentSortOption === 'priceAsc') {

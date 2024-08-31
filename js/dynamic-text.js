@@ -214,50 +214,99 @@ document.addEventListener('DOMContentLoaded', function() {
 async function sendImageDataAndRedirect(data, isUrl = false) {
     const uploadEndpoint = isUrl 
         ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
-        : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageSearch';
+        : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/upload';
 
-    localStorage.setItem('lastSearchImage', data);
+    // Only store lastSearchImage if it's a URL
+    if (isUrl) {
+        localStorage.setItem('lastSearchImage', data);
+    } else {
+        localStorage.removeItem('lastSearchImage');
+    }
     localStorage.setItem('isImageUrl', isUrl.toString());
 
     // Clear previous search results
     localStorage.removeItem('searchResults');
 
-    // Prepare the request body
-    const requestBody = isUrl
+    // Prepare the initial request body
+    const initialRequestBody = isUrl
         ? {
             imageAddress: data,
             beginPage: 1,
-            pageSize: 10,
+            pageSize: 20,
             country: "en",
             imageId: "0"
           }
         : {
-            base64Image: data,
-            beginPage: 1,
-            pageSize: 10,
-            country: "en"
+            base64Image: data
           };
 
     try {
-        const response = await fetch(uploadEndpoint, {
+        const initialResponse = await fetch(uploadEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(initialRequestBody)
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (!initialResponse.ok) {
+            throw new Error(`HTTP error! status: ${initialResponse.status}`);
         }
 
-        const responseData = await response.json();
-        if (responseData && responseData.result) {
-            localStorage.setItem('searchResults', JSON.stringify(responseData));
-            window.location.href = 'search-results.html'; // Make sure this path is correct
-            // window.location.href = '/search-results'; 
+        const initialResponseData = await initialResponse.json();
+        
+        if (isUrl) {
+            // Handle imageQuery response
+            if (initialResponseData && initialResponseData.result) {
+                localStorage.setItem('searchResults', JSON.stringify(initialResponseData));
+                // window.location.href = '/search-results';
+                window.location.href = 'search-results.html';
+            } else {
+                throw new Error('Invalid or missing response data');
+            }
         } else {
-            throw new Error('Invalid or missing response data');
+            // Handle upload response
+            if (initialResponseData && initialResponseData.result && initialResponseData.result.result) {
+                const imageId = initialResponseData.result.result;
+                if (imageId === "0") {
+                    alert("Image upload failed. Please upload an image less than 100KB.");
+                } else {
+                    localStorage.setItem('imageId', imageId);
+                    
+                    // Send a second request to imageQuery with the received imageId
+                    const imageQueryEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
+                    const imageQueryRequestBody = {
+                        beginPage: 1,
+                        pageSize: 20,
+                        country: "en",
+                        imageId: imageId
+                    };
+
+                    const imageQueryResponse = await fetch(imageQueryEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(imageQueryRequestBody)
+                    });
+
+                    if (!imageQueryResponse.ok) {
+                        throw new Error(`HTTP error! status: ${imageQueryResponse.status}`);
+                    }
+
+                    const imageQueryResponseData = await imageQueryResponse.json();
+
+                    if (imageQueryResponseData && imageQueryResponseData.result) {
+                        localStorage.setItem('searchResults', JSON.stringify(imageQueryResponseData));
+                        // window.location.href = '/search-results';
+                        window.location.href = 'search-results.html';
+                    } else {
+                        throw new Error('Invalid or missing response data from imageQuery');
+                    }
+                }
+            } else {
+                throw new Error('Invalid or missing response data from upload');
+            }
         }
     } catch (error) {
         console.error(`Error in sendImageDataAndRedirect:`, error);
