@@ -205,8 +205,10 @@ function redirectToProductPage(productDetails) {
     // Store the product details in localStorage
     localStorage.setItem('currentProductDetails', JSON.stringify(productDetails));
     // Redirect to the product page
-    window.location.href = 'product.html';
-    // window.location.href = '/product';
+    const encodedOfferId = Base64.encodeURI(productDetails.offerId);
+    window.location.href = `product.html?id=${encodedOfferId}`;
+    // production url
+    // window.location.href = `/product?id=${encodedOfferId}`;
 }
 
 // Initialize the page

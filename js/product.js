@@ -1,25 +1,71 @@
 document.addEventListener('DOMContentLoaded', function() {
     const productDetailsString = localStorage.getItem('currentProductDetails');
-
-    if (productDetailsString) {
-        try {
-            const productDetails = JSON.parse(productDetailsString);
-            displayBasicProductInfo(productDetails);
-            if (productDetails.offerId) {
-                fetchProductDetails(productDetails.offerId);
-            } else {
-                console.error('No offerId found in product details');
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedOfferId = urlParams.get('id');
+    
+    if (encodedOfferId) {
+        const offerId = Base64.decode(encodedOfferId);
+        let localDataUsed = false;
+        if (productDetailsString) {
+            try {
+                const productDetails = JSON.parse(productDetailsString);
+                if (String(offerId) === String(productDetails.offerId)) {
+                    displayBasicProductInfo(productDetails);
+                    localDataUsed = true;
+                } else {
+                    console.info('No matched product details found in localStorage');
+                }
+            } catch (error) {
+                console.error('Error parsing product details:', error);
             }
-        } catch (error) {
-            console.error('Error parsing product details:', error);
+        } else {
+            console.info('No product details found in localStorage');
         }
+        
+        fetchProductDetails(offerId, localDataUsed);
     } else {
-        console.error('No product details found in localStorage');
+        console.info('No product ID found in URL');
+        // Redirect to 404 page
+        window.location.href = '404.html';
+        // window.location.href = '/404';
     }
 });
 
-function displayBasicProductInfo(productDetails) {
+function fetchProductDetails(offerId, localDataUsed) {
+    const detailEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/detail';
+    const requestBody = {
+        offerId: offerId,
+        country: "en"
+    };
 
+    fetch(detailEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.result && data.result.result) {
+            displayFullProductDetails(data.result.result, localDataUsed);
+        } else {
+            console.error('Invalid product details response');
+            window.location.href = '404.html';
+            // window.location.href = '/404';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching product details:', error);
+    });
+}
+
+function displayBasicProductInfo(productDetails) {
     // Update the product title
     const titleElement = document.getElementById('h1_24-28');
     if (titleElement) {
@@ -34,41 +80,24 @@ function displayBasicProductInfo(productDetails) {
     }
 }
 
-async function fetchProductDetails(offerId) {
-    const detailEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/detail';
-    const requestBody = {
-        offerId: offerId,
-        country: "en"
-    };
-
-    try {
-        const response = await fetch(detailEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data && data.result && data.result.result) {
-            displayFullProductDetails(data.result.result);
-        } else {
-            console.error('Invalid product details response');
-        }
-    } catch (error) {
-        console.error('Error fetching product details:', error);
-    }
-}
-
-function displayFullProductDetails(productDetails) {
+function displayFullProductDetails(productDetails, localDataUsed) {
     const mainImageElement = document.querySelector('#product-image-main > img');
     const additionalImagesContainer = document.getElementById('product-image-additional');
     const additionalImagesContainerVar = document.getElementById('product-image-additional-variables');
+
+    if (!localDataUsed) {
+        // Update the product title
+        const titleElement = document.getElementById('h1_24-28');
+        if (titleElement) {
+            titleElement.textContent = productDetails.subjectTrans || '';
+        }
+
+        // Update the main product image
+        if (mainImageElement) {
+            mainImageElement.src = productDetails.productImage.images[0] || '';
+            mainImageElement.alt = productDetails.subjectTrans || '';
+        }
+    }
 
     // Function to update main image and highlight selected image
     function updateMainImage(clickedImg, container) {
