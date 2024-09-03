@@ -265,6 +265,35 @@
 
 /* <--------------- Index page css ---------------->*/
 
+.loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #1f3154;
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: c;
+}
+
+.loading-circle {
+  width: 60px;
+  height: 60px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .loop-animation-wrapper {
   overflow: hidden;
   width: 100%;

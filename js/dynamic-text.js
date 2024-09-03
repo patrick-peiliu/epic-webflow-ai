@@ -1,5 +1,21 @@
 const CACHE_DURATION = 20 * 1000; // 10 minutes in milliseconds
 
+const loadingOverlay = document.querySelector('.loading-overlay');
+
+function showLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'flex';  // Use flex to center content
+    document.body.style.overflow = 'hidden';  // Prevent scrolling while loading
+  }
+}
+
+function hideLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'none';
+    document.body.style.overflow = '';  // Restore scrolling
+  }
+}
+
 function getCachedData(key) {
     const cachedData = localStorage.getItem(key);
     if (cachedData) {
@@ -212,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function sendImageDataAndRedirect(data, isUrl = false) {
+    showLoading();
     const uploadEndpoint = isUrl 
         ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
         : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/upload';
@@ -311,6 +328,8 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
     } catch (error) {
         console.error(`Error in sendImageDataAndRedirect:`, error);
         alert(`Error processing request: ${error.message}`);
+    } finally {
+        hideLoading();
     }
 }
 
