@@ -186,7 +186,10 @@ function createProductCard(item) {
         </div>
         <div class="card-content">
             <h3 class="product-title">${item.subjectTrans || 'Product'}</h3>
-            <p class="product-price">¥${item.priceInfo.price || 'Price not available'}</p>
+            <div class="product-stats">
+                <p class="monthly-sales">Monthly Sales:${item.monthSold || 0}</p>
+                <p class="repurchase-rate">Repurchase rate:${item.repurchaseRate || '0%'}</p>
+            </div>
         </div>
     `;
 

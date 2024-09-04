@@ -225,6 +225,18 @@
   overflow: hidden;
 }
 
+.product-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.monthly-sales, .repurchase-rate {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
 .product-price {
   font-size: 18px;
   font-weight: bold;
