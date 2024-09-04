@@ -43,13 +43,11 @@ function setupEventListeners() {
 // Setup sort buttons
 function setupSortButtons() {
     const relevantButton = document.querySelector('#relevant-button .button-primary');
-    const priceAscButton = document.querySelector('#price-asc-button .button-primary');
-    const priceDescButton = document.querySelector('#price-desc-button .button-primary');
+    const popularButton = document.querySelector('#popular-button .button-primary');
 
-    if (relevantButton && priceAscButton && priceDescButton) {
+    if (relevantButton && popularButton) {
         relevantButton.addEventListener('click', (e) => handleSortButtonClick(e, 'relevant', relevantButton));
-        priceAscButton.addEventListener('click', (e) => handleSortButtonClick(e, 'priceAsc', priceAscButton));
-        priceDescButton.addEventListener('click', (e) => handleSortButtonClick(e, 'priceDesc', priceDescButton));
+        popularButton.addEventListener('click', (e) => handleSortButtonClick(e, 'popular', popularButton));
     } else {
         console.error('One or more sort buttons not found in the DOM');
     }
@@ -124,10 +122,8 @@ async function loadMoreResults(newSearch = false) {
     }
 
     // Add sort parameter based on currentSortOption
-    if (currentSortOption === 'priceAsc') {
-        requestBody.sort = JSON.stringify({ price: "asc" });
-    } else if (currentSortOption === 'priceDesc') {
-        requestBody.sort = JSON.stringify({ price: "desc" });
+    if (currentSortOption === 'popular') {
+        requestBody.sort = JSON.stringify({ monthSold: "desc" });
     }
 
     try {
