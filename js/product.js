@@ -217,38 +217,65 @@ function displayFullProductDetails(productDetails, localDataUsed) {
         }
     }
 
+    /**
+     * filter out attributes
+     * "attributeId": "7108" - Inventory: Yes
+     * "attributeId": "3216" - Color: Red, Yellow, Green
+     * "attributeId": "100000729" - Can be customized: Yes
+     * "attributeId": "1627139" - Support customization
+     * "attributeId": "182318189" - Main downstream platform: ebay, 
+     * "attributeId": "193290002" - Main sales area: Africa, 
+     * "attributeId": "4921" - Upper material: Fabric
+     * "attributeId": "1773" - "Gram weight" - "More than 200g (inclusive)"
+     * "attributeId": "3572" - Weight - ""
+     * "attributeId": "1957" - Gross weight - ""
+     * "attributeId": "287" - Material: Fabric
+     * "attributeId": "2340" - Capacity: Fabric
+     * "attributeId": "100124790" - Whether there is a patent: No
+     * "attributeId": "243840851" - Whether there is copyright or patent: No
+     * "attributeId": "446" - Dimensions: Trumpet 70*80cm
+     * "attributeId": "401423489" - Diameter: Trumpet 70*80cm
+     * "attributeId": "181680456" - Whether assembled: Assembly
+     */
+    
+    // Define the list of allowed attribute IDs
+    const attributeids = ['7108', '3216', '100000729', '1627139', '182318189', '193290002', '4921', '1773', '3572', '1957', '287', '2340', '100124790', '243840851', '446', '401423489', '181680456'];
+
     // Update product attributes
     if (productDetails.productAttribute && productDetails.productAttribute.length > 0) {
         const detailsContainer = document.querySelector('.details-grid');
         detailsContainer.innerHTML = ''; // Clear existing content
 
         productDetails.productAttribute.forEach((attribute) => {
-            const detailBlock = document.createElement('div');
-            detailBlock.className = 'details-block';
-            
-            const existingBlock = Array.from(detailsContainer.children).find(block => {
-                return block.querySelector('.div-align-left p').textContent.trim().toLowerCase() === (attribute.attributeNameTrans + ':').toLowerCase();
-            });
+            // Only process attributes with IDs in the attributeids list
+            if (attribute.attributeId && attributeids.includes(attribute.attributeId)) {
+                const detailBlock = document.createElement('div');
+                detailBlock.className = 'details-block';
+                
+                const existingBlock = Array.from(detailsContainer.children).find(block => {
+                    return block.querySelector('.div-align-left p').textContent.trim().toLowerCase() === (attribute.attributeNameTrans + ':').toLowerCase();
+                });
 
-            let rightPContent = attribute.valueTrans;
+                let rightPContent = attribute.valueTrans;
 
-            if (existingBlock && attribute.attributeId) {
-                const existingRightP = existingBlock.querySelector('.div-align-right p');
-                rightPContent = existingRightP.textContent.trim() + ', ' + attribute.valueTrans;
-                existingBlock.remove(); // Remove the existing block as we'll add an updated one
+                if (existingBlock) {
+                    const existingRightP = existingBlock.querySelector('.div-align-right p');
+                    rightPContent = existingRightP.textContent.trim() + ', ' + attribute.valueTrans;
+                    existingBlock.remove(); // Remove the existing block as we'll add an updated one
+                }
+
+                detailBlock.innerHTML = `
+                    <div class="w-layout-hflex description-line-details">
+                        <div class="div-align-left">
+                            <p class="p-16-20">${attribute.attributeNameTrans}:</p>
+                        </div>
+                        <div class="div-align-right">
+                            <p class="p-16-20 bold">${rightPContent}</p>
+                        </div>
+                    </div>
+                `;
+                detailsContainer.appendChild(detailBlock);
             }
-
-            detailBlock.innerHTML = `
-                <div class="w-layout-hflex description-line-details">
-                    <div class="div-align-left">
-                        <p class="p-16-20">${attribute.attributeNameTrans}:</p>
-                    </div>
-                    <div class="div-align-right">
-                        <p class="p-16-20 bold">${rightPContent}</p>
-                    </div>
-                </div>
-            `;
-            detailsContainer.appendChild(detailBlock);
         });
     }
 }
