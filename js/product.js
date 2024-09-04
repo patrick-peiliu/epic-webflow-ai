@@ -80,6 +80,13 @@ function displayBasicProductInfo(productDetails) {
     }
 }
 
+function populateProductSubject(productDetails) {
+    const productSubjectField = document.getElementById('product-subject');
+    if (productSubjectField && productDetails.subjectTrans) {
+        productSubjectField.value = productDetails.subjectTrans;
+    }
+}
+
 function displayFullProductDetails(productDetails, localDataUsed) {
     const mainImageElement = document.querySelector('#product-image-main > img');
     const additionalImagesContainer = document.getElementById('product-image-additional');
@@ -98,6 +105,8 @@ function displayFullProductDetails(productDetails, localDataUsed) {
             mainImageElement.alt = productDetails.subjectTrans || '';
         }
     }
+
+    populateProductSubject(productDetails);
 
     // Function to update main image and highlight selected image
     function updateMainImage(clickedImg, container) {
