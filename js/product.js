@@ -47,8 +47,11 @@ function initializeWishlistFeature(productDetails) {
         let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
         const isWishlisted = wishlist.some(item => item.offerId === productDetails.offerId);
         updateWishlistButton(isWishlisted);
+        // Remove the hidden-field class to show the button
+        wishlistButton.classList.remove('hidden-field');
     }
 
+    // Check wishlist status and show the button when ready
     checkWishlistStatus();
 }
 
@@ -145,7 +148,7 @@ function displayFullProductDetails(productDetails, localDataUsed) {
     const mainImageElement = document.querySelector('#product-image-main > img');
     const additionalImagesContainer = document.getElementById('product-image-additional');
     const additionalImagesContainerVar = document.getElementById('product-image-additional-variables');
-
+    
     if (!localDataUsed) {
         // Update the product title
         const titleElement = document.getElementById('h1_24-28');
