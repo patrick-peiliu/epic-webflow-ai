@@ -10,6 +10,94 @@
   border: 0;
 }
 
+.w-layout-hflex.grid-products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px; /* Adjust this value based on your layout */
+  margin: 0 auto;
+}
+
+.card {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure all cards have the same height */
+}
+
+.card-image-container {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.card-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wishlist-card-content {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.wishlist-product-title {
+  font-size: 16px;
+  margin-bottom: 10px;
+  flex-grow: 1;
+}
+
+.w-layout-hflex.like-dislike-line {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Media query for large tablets and small desktops */
+@media screen and (max-width: 1200px) {
+  .w-layout-hflex.grid-products {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Media query for tablets */
+@media screen and (max-width: 991px) {
+  .w-layout-hflex.grid-products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Media query for mobile landscape */
+@media screen and (max-width: 767px) {
+  .w-layout-hflex.grid-products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .wishlist-card-content {
+    padding: 10px;
+  }
+
+  .wishlist-product-title {
+    font-size: 14px;
+  }
+}
+
+/* Media query for mobile portrait */
+@media screen and (max-width: 479px) {
+  .w-layout-hflex.grid-products {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* <--------------- product page css ---------------->*/
 .hidden-field {
   position: absolute;
@@ -220,6 +308,7 @@
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 100%; /* Ensure all cards have the same height */
 }
 
 .card-image-container {

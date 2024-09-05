@@ -51,10 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                <img src="${item.imageUrl}" loading="lazy" alt="${item.subjectTrans}" />
-                <h3 class="h3 _24-28">${item.subjectTrans}</h3>
-                <div class="w-layout-hflex like-dislike-line">
-                    <a href="#" class="link-text remove-wishlist" data-offer-id="${item.offerId}">Remove</a>
+                <div class="card-image-container">
+                    <img src="${item.imageUrl}" loading="lazy" alt="${item.subjectTrans}" />
+                </div>
+                <div class="wishlist-card-content">
+                    <h3 class="wishlist-product-title">${item.subjectTrans}</h3>
+                    <div class="w-layout-hflex like-dislike-line">
+                        <a href="#" class="link-text remove-wishlist" data-offer-id="${item.offerId}">Remove</a>
+                    </div>
                 </div>
             `;
 
