@@ -340,9 +340,13 @@
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   font-family: Arial;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%; 
 }
 
 @keyframes spin {
