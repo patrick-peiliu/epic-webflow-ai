@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const wishlistContainer = document.getElementById('wishlistGrid');
+    const wishListsField = document.getElementById('Wishlists');
 
     function getWishlist() {
         const wishlistJSON = localStorage.getItem('wishlist');
@@ -22,6 +23,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function saveWishlist(wishlist) {
         localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        updateWishlistField(wishlist);
+    }
+
+    function updateWishlistField(wishlist) {
+        if (wishListsField) {
+            wishListsField.value = JSON.stringify(wishlist);
+        }
     }
 
     function displayWishlist() {
@@ -35,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (wishlist.length === 0) {
             wishlistContainer.innerHTML = '<p>Your wishlist is empty.</p>';
+            updateWishlistField([]);
             return;
         }
 
@@ -46,11 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h3 class="h3 _24-28">${item.subjectTrans}</h3>
                 <div class="w-layout-hflex like-dislike-line">
                     <a href="#" class="link-text remove-wishlist" data-offer-id="${item.offerId}">Remove</a>
-                    <img src="https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66a16605ed582742f5697ac1_heart-filled-02.png" loading="lazy" alt="" class="heart-icon filled" />
                 </div>
             `;
 
-            // Add click event listener to the card
             card.addEventListener('click', (event) => {
                 // Prevent redirection if the click is on the remove button
                 if (!event.target.closest('.remove-wishlist')) {
@@ -61,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function() {
             wishlistContainer.appendChild(card);
         });
 
-        // Add event listeners to remove buttons
         document.querySelectorAll('.remove-wishlist').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -69,6 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 removeFromWishlist(this.dataset.offerId);
             });
         });
+
+        updateWishlistField(wishlist);
     }
 
     function removeFromWishlist(offerId) {

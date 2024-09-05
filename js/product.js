@@ -21,10 +21,15 @@ function initializeWishlistFeature(productDetails) {
             wishlist.splice(index, 1);
             updateWishlistButton(false);
         } else {
+            const specSelectionField = document.querySelector('.spec-container.selected .spec-text');
+            const formatSelectionField = document.querySelector('.format-button.selected');
+            
             wishlist.push({
                 offerId: productDetails.offerId,
                 imageUrl: productDetails.productImage.images[0],
-                subjectTrans: productDetails.subjectTrans
+                subjectTrans: productDetails.subjectTrans,
+                specSelectionField: specSelectionField ? specSelectionField.textContent.trim() : '',
+                formatSelectionField: formatSelectionField ? formatSelectionField.textContent.trim() : ''
             });
             updateWishlistButton(true);
         }
