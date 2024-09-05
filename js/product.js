@@ -158,19 +158,26 @@ function displayFullProductDetails(productDetails, localDataUsed) {
     populateProductSubject(productDetails);
 
     // Function to update main image and highlight selected image
-    function updateMainImage(clickedImg, container) {
+    function updateMainImage(clickedElement, container) {
         if (mainImageElement) {
-            mainImageElement.src = clickedImg.src;
-            mainImageElement.alt = clickedImg.alt;
+            const newSrc = clickedElement.src || clickedElement.querySelector('img')?.src;
+            if (newSrc) {
+                mainImageElement.src = newSrc;
+                mainImageElement.alt = clickedElement.alt || clickedElement.querySelector('img')?.alt || '';
+            } else {
+                console.log('No image source found for this spec');
+                // Optionally, set a placeholder image or do nothing
+            }
         }
         
-        // Remove 'selected' class from all images in the container
-        container.querySelectorAll('.img-product, .spec-image').forEach(img => {
-            img.classList.remove('selected');
+        // Remove 'selected' class from all elements in the container
+        container.querySelectorAll('.spec-container, .img-product, .spec-image').forEach(el => {
+            el.classList.remove('selected');
         });
         
-        // Add 'selected' class to the clicked image
-        clickedImg.classList.add('selected');
+        // Add 'selected' class to the clicked element or its parent spec-container
+        const targetElement = clickedElement.closest('.spec-container') || clickedElement;
+        targetElement.classList.add('selected');
     }
 
     // Event listener for additional product images
@@ -260,7 +267,7 @@ function displayFullProductDetails(productDetails, localDataUsed) {
                         container.classList.remove('selected');
                     });
                     this.classList.add('selected');
-                    updateMainImage(this.querySelector('.spec-image'), additionalImagesContainerVar);
+                    updateMainImage(this.querySelector('.spec-image') || this, additionalImagesContainerVar);
                     updateSpecSelection(this.querySelector('.spec-text').textContent);
                 });
 

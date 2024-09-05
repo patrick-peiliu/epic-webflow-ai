@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function saveWishlist(wishlist) {
         localStorage.setItem('wishlist', JSON.stringify(wishlist));
-        console.log('Saved wishlist:', JSON.stringify(wishlist));
     }
 
     function displayWishlist() {
@@ -50,6 +49,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     <img src="https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66a16605ed582742f5697ac1_heart-filled-02.png" loading="lazy" alt="" class="heart-icon filled" />
                 </div>
             `;
+
+            // Add click event listener to the card
+            card.addEventListener('click', (event) => {
+                // Prevent redirection if the click is on the remove button
+                if (!event.target.closest('.remove-wishlist')) {
+                    redirectToProductPage(item);
+                }
+            });
+
             wishlistContainer.appendChild(card);
         });
 
@@ -57,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.remove-wishlist').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation(); // Prevent the card click event from firing
                 removeFromWishlist(this.dataset.offerId);
             });
         });
@@ -73,6 +82,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let updatedWishlist = getWishlist();
         
         displayWishlist();
+    }
+
+    function redirectToProductPage(productDetails) {
+        // Store the product details in localStorage
+        localStorage.setItem('currentProductDetails', JSON.stringify(productDetails));
+        // Redirect to the product page
+        const encodedOfferId = Base64.encodeURI(productDetails.offerId);
+        window.location.href = `product.html?id=${encodedOfferId}`;
+        // production url
+        // window.location.href = `/product?id=${encodedOfferId}`;
     }
 
     // Check if the wishlist container exists before trying to display the wishlist
