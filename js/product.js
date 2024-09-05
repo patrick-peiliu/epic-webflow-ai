@@ -134,16 +134,6 @@ function displayFullProductDetails(productDetails, localDataUsed) {
         });
     }
 
-    // Event listener for spec images
-    if (additionalImagesContainerVar) {
-        additionalImagesContainerVar.addEventListener('click', function(event) {
-            const clickedImg = event.target.closest('.spec-image');
-            if (clickedImg) {
-                updateMainImage(clickedImg, additionalImagesContainerVar);
-            }
-        });
-    }
-
     // Populate additional product images
     if (additionalImagesContainer && productDetails.productImage && productDetails.productImage.images.length > 0) {
         additionalImagesContainer.innerHTML = ''; // Clear existing content
@@ -163,6 +153,13 @@ function displayFullProductDetails(productDetails, localDataUsed) {
         });
     }
     
+    function updateSpecSelection(text) {
+        const specSelectionField = document.getElementById('spec-selection');
+        if (specSelectionField) {
+            specSelectionField.value = text;
+        }
+    }
+
     if (additionalImagesContainerVar && productDetails.productSkuInfos && productDetails.productSkuInfos.length > 0) {
         additionalImagesContainerVar.innerHTML = ''; // Clear existing content
 
@@ -175,7 +172,9 @@ function displayFullProductDetails(productDetails, localDataUsed) {
                 const skuInfo = productDetails.productSkuInfos[j];
                 const specContainer = document.createElement('div');
                 specContainer.className = 'spec-container';
-                if (j === 0) specContainer.classList.add('selected');
+                if (j === 0) {
+                    specContainer.classList.add('selected');
+                }
 
                 const imgContainer = document.createElement('div');
                 imgContainer.className = 'spec-image-container';
@@ -212,6 +211,8 @@ function displayFullProductDetails(productDetails, localDataUsed) {
                         container.classList.remove('selected');
                     });
                     this.classList.add('selected');
+                    updateMainImage(this.querySelector('.spec-image'), additionalImagesContainerVar);
+                    updateSpecSelection(this.querySelector('.spec-text').textContent);
                 });
 
                 rowContainer.appendChild(specContainer);
@@ -223,6 +224,12 @@ function displayFullProductDetails(productDetails, localDataUsed) {
                 placeholderContainer.className = 'spec-container placeholder';
                 rowContainer.appendChild(placeholderContainer);
             }
+        }
+
+        // Set initial spec selection
+        const initialSelectedSpec = additionalImagesContainerVar.querySelector('.spec-container.selected .spec-text');
+        if (initialSelectedSpec) {
+            updateSpecSelection(initialSelectedSpec.textContent);
         }
     }
 
@@ -291,11 +298,32 @@ function displayFullProductDetails(productDetails, localDataUsed) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const formatButtons = document.querySelectorAll('.format-button');
+    const formatSelectionField = document.getElementById('format-selection');
     
     formatButtons.forEach(button => {
         button.addEventListener('click', function() {
+            // Remove 'selected' class from all buttons
             formatButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Add 'selected' class to clicked button
             this.classList.add('selected');
+            
+            // Update the hidden input field with the selected format
+            if (formatSelectionField) {
+                formatSelectionField.value = this.textContent.trim();
+            }
         });
     });
 });
+
+// Optionally, set an initial value for the format selection
+function setInitialFormatSelection() {
+    const formatSelectionField = document.getElementById('format-selection');
+    const initialSelectedButton = document.querySelector('.format-button.selected');
+    if (formatSelectionField && initialSelectedButton) {
+        formatSelectionField.value = initialSelectedButton.textContent.trim();
+    }
+}
+
+// Call this function after the DOM is loaded
+setInitialFormatSelection();
