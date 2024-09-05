@@ -1,3 +1,52 @@
+function initializeWishlistFeature(productDetails) {
+    const wishlistButton = document.querySelector('.w-layout-hflex.like-dislike-product');
+    const wishlistText = wishlistButton.querySelector('.link-text');
+    const heartIcon = wishlistButton.querySelector('.heart-icon');
+
+    function updateWishlistButton(isWishlisted) {
+        if (isWishlisted) {
+            wishlistText.textContent = 'Remove from wishlist';
+            heartIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66a16605ed582742f5697ac1_heart-filled-02.png';
+        } else {
+            wishlistText.textContent = 'Add to wishlist';
+            heartIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/669ee220214d380bcfc1f169_heart-icon.png';
+        }
+    }
+
+    function toggleWishlist() {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const index = wishlist.findIndex(item => item.offerId === productDetails.offerId);
+
+        if (index > -1) {
+            wishlist.splice(index, 1);
+            updateWishlistButton(false);
+        } else {
+            wishlist.push({
+                offerId: productDetails.offerId,
+                imageUrl: productDetails.productImage.images[0],
+                subjectTrans: productDetails.subjectTrans
+            });
+            updateWishlistButton(true);
+        }
+
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    }
+
+    wishlistButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleWishlist();
+    });
+
+    // Check if the product is already in the wishlist when the page loads
+    function checkWishlistStatus() {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const isWishlisted = wishlist.some(item => item.offerId === productDetails.offerId);
+        updateWishlistButton(isWishlisted);
+    }
+
+    checkWishlistStatus();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const productDetailsString = localStorage.getItem('currentProductDetails');
     const urlParams = new URLSearchParams(window.location.search);
@@ -232,6 +281,8 @@ function displayFullProductDetails(productDetails, localDataUsed) {
             updateSpecSelection(initialSelectedSpec.textContent);
         }
     }
+
+    initializeWishlistFeature(productDetails);
 
     /**
      * filter out attributes
