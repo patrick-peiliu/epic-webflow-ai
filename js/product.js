@@ -28,8 +28,9 @@ function initializeWishlistFeature(productDetails) {
                 offerId: productDetails.offerId,
                 imageUrl: productDetails.productImage.images[0],
                 subjectTrans: productDetails.subjectTrans,
-                specSelectionField: specSelectionField ? specSelectionField.textContent.trim() : '',
-                formatSelectionField: formatSelectionField ? formatSelectionField.textContent.trim() : ''
+                spec: specSelectionField ? specSelectionField.textContent.trim() : '',
+                format: formatSelectionField ? formatSelectionField.textContent.trim() : '',
+                originalUrl: `https://detail.1688.com/offer/${productDetails.offerId}.html`
             });
             updateWishlistButton(true);
         }
@@ -137,10 +138,11 @@ function displayBasicProductInfo(productDetails) {
     }
 }
 
-function populateProductSubject(productDetails) {
-    const productSubjectField = document.getElementById('product-subject');
-    if (productSubjectField && productDetails.subjectTrans) {
-        productSubjectField.value = productDetails.subjectTrans;
+function populateOriginalUrl(productDetails) {
+    const originalUrlField = document.getElementById('original-url');
+    if (originalUrlField && productDetails.offerId) {
+        const productUrl = `https://detail.1688.com/offer/${productDetails.offerId}.html`;
+        originalUrlField.value = productUrl;
     }
 }
 
@@ -163,7 +165,7 @@ function displayFullProductDetails(productDetails, localDataUsed) {
         }
     }
 
-    populateProductSubject(productDetails);
+    populateOriginalUrl(productDetails);
 
     // Function to update main image and highlight selected image
     function updateMainImage(clickedElement, container) {
