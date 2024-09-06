@@ -36,8 +36,19 @@ function loadInitialResults() {
 
 // Setup event listeners
 function setupEventListeners() {
-    window.addEventListener('scroll', handleScroll);
     setupSortButtons();
+    setupLoadMoreButton();
+}
+
+function setupLoadMoreButton() {
+    const loadMoreButton = document.getElementById('load-more-button');
+    if (loadMoreButton) {
+        loadMoreButton.addEventListener('click', () => {
+            if (!isLoading && hasMoreResults) {
+                loadMoreResults(false); // false indicates it's not a new search
+            }
+        });
+    }
 }
 
 // Setup sort buttons
@@ -75,18 +86,12 @@ function updateButtonStyles(selectedButton) {
     selectedButton.classList.add('inverted');
 }
 
-function handleScroll() {
-    if (isLoading || !hasMoreResults) return;
-
-    const scrollPosition = window.innerHeight + window.scrollY;
-    const bodyHeight = document.body.offsetHeight;
-
-    if (scrollPosition >= bodyHeight - 500) { // Load more when 500px from bottom
-        loadMoreResults();
-    }
-}
-
 async function loadMoreResults(newSearch = false) {
+    if (isLoading) return;
+
+    isLoading = true;
+    updateLoadingState(true);
+
     if (newSearch) {
         currentPage = 1;
         // Clear existing results here
@@ -101,10 +106,9 @@ async function loadMoreResults(newSearch = false) {
     if (!imageId && !imageAddress) {
         console.log('No previous search data available');
         hasMoreResults = false;
+        updateLoadingState(false);
         return;
     }
-
-    isLoading = true;
 
     const uploadEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
 
@@ -142,6 +146,7 @@ async function loadMoreResults(newSearch = false) {
         const data = await response.json();
         if (data && data.result && data.result.result) {
             displayResults(data.result.result, newSearch);
+            updateResultsCount(data.result.result.totalRecords);
         } else {
             hasMoreResults = false;
         }
@@ -150,6 +155,7 @@ async function loadMoreResults(newSearch = false) {
         hasMoreResults = false;
     } finally {
         isLoading = false;
+        updateLoadingState(false);
     }
 }
 
@@ -168,12 +174,43 @@ function displayResults(results, newSearch) {
             const productCard = createProductCard(item);
             productGrid.appendChild(productCard);
         });
-        if (resultsCountElement) {
-            resultsCountElement.textContent = `Displaying ${productGrid.children.length} of ${totalRecords} results`;
-        }
-        hasMoreResults = productGrid.children.length < totalRecords;
+        updateResultsCount(totalRecords);
     } else if (newSearch) {
         productGrid.innerHTML = '<p>No results found.</p>';
+    }
+}
+
+function updateLoadingState(isLoading) {
+    const loadMoreButton = document.getElementById('load-more-button');
+    if (loadMoreButton) {
+        if (isLoading) {
+            loadMoreButton.innerHTML = 'Loading <img src="https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66dadfb9e2fdbb07d0b2f446_loading.png" alt="Loading" class="loading-icon">';
+            loadMoreButton.classList.add('loading');
+        } else {
+            loadMoreButton.innerHTML = 'Load more';
+            loadMoreButton.classList.remove('loading');
+        }
+        loadMoreButton.disabled = isLoading;
+    }
+}
+
+function updateResultsCount(totalRecords) {
+    const resultsCountElements = document.querySelectorAll('.results-count');
+    const productGrid = document.querySelector('.w-layout-hflex.grid-products');
+
+    if (productGrid) {
+        const displayedCount = productGrid.children.length;
+
+        resultsCountElements.forEach(element => {
+            element.textContent = `Displaying ${displayedCount} of ${totalRecords} results`;
+        });
+
+        const hasMoreResults = displayedCount < totalRecords;
+
+        const loadMoreButton = document.getElementById('load-more-button');
+        if (loadMoreButton) {
+            loadMoreButton.style.display = hasMoreResults ? 'block' : 'none';
+        }
     }
 }
 
