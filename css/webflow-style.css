@@ -441,6 +441,61 @@
 
 /* <--------------- Index page css ---------------->*/
 
+.photo-find {
+  /* Photo-find your first hot product or your next best seller. */
+  width: 520px;
+  height: 28px;
+
+  /* Heading/H5 */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  /* identical to box height, or 28px */
+
+  color: #666D80;
+
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 8px;
+
+  width: 520px;
+  height: 344px;
+}
+
+.marker {
+  position: relative;
+  top: -95px;
+}
+
+.home-slogan {
+  width: 520px;
+  height: 291px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 88px;
+  line-height: 110%;
+  /* or 97px */
+  letter-spacing: -0.03em;
+  
+  background: linear-gradient(80.63deg, #4ECE89 11.15%, #3EB1E2 27.44%, #3E93E2 43.73%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
 .loading-overlay {
   display: none;
   position: fixed;
@@ -3070,7 +3125,7 @@ textarea.w-input, textarea.w-select {
 }
 
 .hero-split.img {
-  max-width: 56%;
+  max-width: 58%;
 }
 
 .p-14-20 {
