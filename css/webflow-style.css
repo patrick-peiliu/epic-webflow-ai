@@ -361,11 +361,44 @@
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   height: 100%; /* Ensure all cards have the same height */
+  cursor: pointer;
 }
 
 .card-image-container {
   aspect-ratio: 1 / 1;
   overflow: hidden;
+  position: relative;
+}
+
+.wishlist-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  padding: 5px;
+  width: 34px; /* Adjust based on your icon size */
+  height: 34px; /* Adjust based on your icon size */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card:hover .wishlist-icon {
+  opacity: 1;
+}
+
+.heart-icon {
+  width: 24px; /* Adjust based on your icon size */
+  height: 24px; /* Adjust based on your icon size */
+  transition: transform 0.3s ease;
+}
+
+.wishlist-icon:hover .heart-icon {
+  transform: scale(1.1);
 }
 
 .card-image-container img {

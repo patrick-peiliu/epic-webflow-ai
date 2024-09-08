@@ -220,6 +220,9 @@ function createProductCard(item) {
     productCard.innerHTML = `
         <div class="card-image-container">
             <img src="${item.imageUrl}" loading="lazy" alt="${item.subjectTrans || 'Product Image'}" />
+            <div class="wishlist-icon">
+                <img src="https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/669ee220214d380bcfc1f169_heart-icon.png" alt="Add to wishlist" class="heart-icon">
+            </div>
         </div>
         <div class="card-content">
             <h3 class="product-title">${item.subjectTrans || 'Product'}</h3>
@@ -230,10 +233,17 @@ function createProductCard(item) {
         </div>
     `;
 
-    productCard.addEventListener('click', () => {
-        redirectToProductPage(item);
-    });
+    productCard.dataset.productId = item.offerId;
+    productCard.dataset.productDetails = JSON.stringify(item);
 
+    checkWishlistStatus(productCard);
+
+    productCard.addEventListener('click', (event) => {
+        // Check if the clicked element is the wishlist icon or its child
+        if (!event.target.closest('.wishlist-icon')) {
+            redirectToProductPage(item);
+        }
+    });
     return productCard;
 }
 
@@ -249,3 +259,56 @@ function redirectToProductPage(productDetails) {
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', initializeSearchResults);
+
+function setupWishlistFunctionality() {
+    const productGrid = document.getElementById('productGrid');
+    productGrid.addEventListener('click', function(e) {
+        const wishlistIcon = e.target.closest('.wishlist-icon');
+        if (wishlistIcon) {
+            e.preventDefault(); // Prevent card click event
+            const productCard = wishlistIcon.closest('.card');
+            const productId = productCard.dataset.productId;
+            toggleWishlist(productCard);
+        }
+    });
+}
+
+function toggleWishlist(productCard) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const productDetails = JSON.parse(productCard.dataset.productDetails);
+    const index = wishlist.findIndex(item => item.offerId === productDetails.offerId);
+
+    if (index > -1) {
+        wishlist.splice(index, 1);
+        updateWishlistButton(productCard, false);
+    } else {
+        wishlist.push({
+            offerId: productDetails.offerId,
+            imageUrl: productDetails.imageUrl,
+            subjectTrans: productDetails.subjectTrans,
+            originalUrl: `https://detail.1688.com/offer/${productDetails.offerId}.html`
+        });
+        updateWishlistButton(productCard, true);
+    }
+
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+}
+
+function updateWishlistButton(productCard, isWishlisted) {
+    const heartIcon = productCard.querySelector('.heart-icon');
+    if (isWishlisted) {
+        heartIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66a16605ed582742f5697ac1_heart-filled-02.png';
+    } else {
+        heartIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/669ee220214d380bcfc1f169_heart-icon.png';
+    }
+}
+
+function checkWishlistStatus(productCard) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const productDetails = JSON.parse(productCard.dataset.productDetails);
+    const isWishlisted = wishlist.some(item => item.offerId === productDetails.offerId);
+    updateWishlistButton(productCard, isWishlisted);
+}
+
+// Call this function after loading the search results
+setupWishlistFunctionality();
