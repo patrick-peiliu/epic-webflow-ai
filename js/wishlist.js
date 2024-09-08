@@ -105,9 +105,13 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('currentProductDetails', JSON.stringify(productDetails));
         // Redirect to the product page
         const encodedOfferId = Base64.encodeURI(productDetails.offerId);
-        window.location.href = `product.html?id=${encodedOfferId}`;
-        // production url
-        // window.location.href = `/product?id=${encodedOfferId}`;
+        // Construct the URL
+        const url = `product.html?id=${encodedOfferId}`;
+        // For production, use:
+        // const url = `/product?id=${encodedOfferId}`;
+        
+        // Open the URL in a new tab
+        window.open(url, '_blank');
     }
 
     function updateWishlistCounter() {
