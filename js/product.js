@@ -24,9 +24,17 @@ function initializeWishlistFeature(productDetails) {
             const specSelectionField = document.querySelector('.spec-container.selected .spec-text');
             const formatSelectionField = document.querySelector('.format-button.selected');
             
+            // Get the image URL from the currently selected image in additionalImagesContainerVar
+            const selectedImageElement = document.querySelector('#product-image-additional-variables .spec-container.selected img');
+            let imageUrl = productDetails.productImage.images[0];
+
+            if (selectedImageElement && selectedImageElement.src && isValidUrl(selectedImageElement.src)) {
+                imageUrl = selectedImageElement.src;
+            }
+
             wishlist.push({
                 offerId: productDetails.offerId,
-                imageUrl: productDetails.productImage.images[0],
+                imageUrl: imageUrl,
                 subjectTrans: productDetails.subjectTrans,
                 spec: specSelectionField ? specSelectionField.textContent.trim() : '',
                 format: formatSelectionField ? formatSelectionField.textContent.trim() : '',
@@ -36,6 +44,16 @@ function initializeWishlistFeature(productDetails) {
         }
 
         localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    }
+
+    // Helper function to validate URL
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
     }
 
     wishlistButton.addEventListener('click', function(e) {
