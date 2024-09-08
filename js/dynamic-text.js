@@ -35,6 +35,40 @@ function setCachedData(key, data) {
     localStorage.setItem(key, JSON.stringify(cacheObject));
 }
 
+function getWishlist() {
+    const wishlistJSON = localStorage.getItem('wishlist');
+    try {
+        if (!wishlistJSON) {
+            console.log('Wishlist is empty or not set');
+            return [];
+        }
+        const parsedWishlist = JSON.parse(wishlistJSON);
+        if (!Array.isArray(parsedWishlist)) {
+            console.error('Parsed wishlist is not an array:', parsedWishlist);
+            return [];
+        }
+        return parsedWishlist;
+    } catch (error) {
+        console.error('Error parsing wishlist:', error);
+        return [];
+    }
+}
+
+function updateWishlistCounter() {
+    const wishlist = getWishlist();
+    const count = wishlist.length;
+    localStorage.setItem('wishlistCount', count);
+    updateWishlistCounterUI(count);
+}
+
+function updateWishlistCounterUI(count) {
+    const counterElement = document.querySelector('.heart-button .wishlist-counter');
+    if (counterElement) {
+        counterElement.textContent = count;
+        counterElement.style.display = 'block';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const uploadDropZone = document.getElementById('uploadDropZone');
     const searchDropZone = document.getElementById('searchDropZone');
@@ -489,48 +523,49 @@ function populateGallery(galleryItems) {
 document.addEventListener('DOMContentLoaded', function() {
     fetchTopKeywords();
     fetchAndPopulateGallery();
+    updateWishlistCounter();
 });
 
-// Function to replace image sources
-function replaceImageSources() {
-    const imageUrls = [
-        "https://cbu01.alicdn.com/img/ibank/O1CN018MFFKj2ItbZ6I0cDx_!!2212958579344-0-cib.jpg",
-        "https://cbu01.alicdn.com/O1CN01QwJWyN1GHvVOXN4lD_!!1745930598-0-cib.jpg",
-        "https://cbu01.alicdn.com/img/ibank/O1CN01GewAV11w0ig2hCNaL_!!3903836246-0-cib.jpg",
-        "https://cbu01.alicdn.com/img/ibank/O1CN01EKPXwy1HyoO4QjkfB_!!2215849650827-0-cib.jpg",
-        "https://cbu01.alicdn.com/img/ibank/18002844909_79330753.jpg",
-        "https://cbu01.alicdn.com/O1CN013t1r6F1zQJkkJ3Wme_!!2206529356708-0-cib.jpg"
-    ];
+// // Function to replace image sources
+// function replaceImageSources() {
+//     const imageUrls = [
+//         "https://cbu01.alicdn.com/img/ibank/O1CN018MFFKj2ItbZ6I0cDx_!!2212958579344-0-cib.jpg",
+//         "https://cbu01.alicdn.com/O1CN01QwJWyN1GHvVOXN4lD_!!1745930598-0-cib.jpg",
+//         "https://cbu01.alicdn.com/img/ibank/O1CN01GewAV11w0ig2hCNaL_!!3903836246-0-cib.jpg",
+//         "https://cbu01.alicdn.com/img/ibank/O1CN01EKPXwy1HyoO4QjkfB_!!2215849650827-0-cib.jpg",
+//         "https://cbu01.alicdn.com/img/ibank/18002844909_79330753.jpg",
+//         "https://cbu01.alicdn.com/O1CN013t1r6F1zQJkkJ3Wme_!!2206529356708-0-cib.jpg"
+//     ];
 
-    // Select all elements with IDs starting with "step-img-drag-"
-    const elements = document.querySelectorAll('[id^="step-img-drag-"]');
+//     // Select all elements with IDs starting with "step-img-drag-"
+//     const elements = document.querySelectorAll('[id^="step-img-drag-"]');
     
-    elements.forEach((element, index) => {
-        const img = element.querySelector('img');
+//     elements.forEach((element, index) => {
+//         const img = element.querySelector('img');
         
-        if (img && index < imageUrls.length) {
-            // Use setAttribute to change the src
-            img.setAttribute('src', imageUrls[index]);
-            // Also update srcset if it exists
-            if (img.hasAttribute('srcset')) {
-                img.setAttribute('srcset', imageUrls[index]);
-            }
-        } else if (img) {
-            console.log(`No URL available for element ${element.id}, image source not replaced`);
-        } else {
-            console.log(`No img tag found in element ${element.id}`);
-        }
-    });
-}
+//         if (img && index < imageUrls.length) {
+//             // Use setAttribute to change the src
+//             img.setAttribute('src', imageUrls[index]);
+//             // Also update srcset if it exists
+//             if (img.hasAttribute('srcset')) {
+//                 img.setAttribute('srcset', imageUrls[index]);
+//             }
+//         } else if (img) {
+//             console.log(`No URL available for element ${element.id}, image source not replaced`);
+//         } else {
+//             console.log(`No img tag found in element ${element.id}`);
+//         }
+//     });
+// }
 
-// Function to ensure the script runs after Webflow's page load
-function runAfterPageLoad() {
-    if (document.readyState === 'complete') {
-        replaceImageSources();
-    } else {
-        window.addEventListener('load', replaceImageSources);
-    }
-}
+// // Function to ensure the script runs after Webflow's page load
+// function runAfterPageLoad() {
+//     if (document.readyState === 'complete') {
+//         replaceImageSources();
+//     } else {
+//         window.addEventListener('load', replaceImageSources);
+//     }
+// }
 
-// Run the script
-runAfterPageLoad();
+// // Run the script
+// runAfterPageLoad();

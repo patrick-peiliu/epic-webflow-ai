@@ -41,6 +41,7 @@ function initializeWishlistFeature(productDetails) {
     wishlistButton.addEventListener('click', function(e) {
         e.preventDefault();
         toggleWishlist();
+        updateWishlistCounter();
     });
 
     // Check if the product is already in the wishlist when the page loads
@@ -60,6 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const productDetailsString = localStorage.getItem('currentProductDetails');
     const urlParams = new URLSearchParams(window.location.search);
     const encodedOfferId = urlParams.get('id');
+
+    updateWishlistCounter();
     
     if (encodedOfferId) {
         const offerId = Base64.decode(encodedOfferId);
@@ -395,3 +398,37 @@ function setInitialFormatSelection() {
 
 // Call this function after the DOM is loaded
 setInitialFormatSelection();
+
+function getWishlist() {
+    const wishlistJSON = localStorage.getItem('wishlist');
+    try {
+        if (!wishlistJSON) {
+            console.log('Wishlist is empty or not set');
+            return [];
+        }
+        const parsedWishlist = JSON.parse(wishlistJSON);
+        if (!Array.isArray(parsedWishlist)) {
+            console.error('Parsed wishlist is not an array:', parsedWishlist);
+            return [];
+        }
+        return parsedWishlist;
+    } catch (error) {
+        console.error('Error parsing wishlist:', error);
+        return [];
+    }
+}
+
+function updateWishlistCounter() {
+    const wishlist = getWishlist();
+    const count = wishlist.length;
+    localStorage.setItem('wishlistCount', count);
+    updateWishlistCounterUI(count);
+}
+
+function updateWishlistCounterUI(count) {
+    const counterElement = document.querySelector('.heart-button .wishlist-counter');
+    if (counterElement) {
+        counterElement.textContent = count;
+        counterElement.style.display = 'block';
+    }
+}

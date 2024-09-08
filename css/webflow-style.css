@@ -1,4 +1,31 @@
 /* <--------------- wishlist page css ---------------->*/
+.heart-button {
+  position: relative;
+  display: inline-block;
+  background-color: var(--epic-yellow);
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  display: flex;
+}
+
+.wishlist-counter {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  width: 20px;  /* Set a fixed width */
+  height: 20px; /* Set a fixed height equal to the width */
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
 .hidden-field {
   position: absolute;
   width: 1px;

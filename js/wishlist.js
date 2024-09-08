@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const wishlistContainer = document.getElementById('wishlistGrid');
     const wishListsField = document.getElementById('Wishlists');
 
+    updateWishlistCounter();
+
     function getWishlist() {
         const wishlistJSON = localStorage.getItem('wishlist');
         try {
@@ -89,6 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
         wishlist = wishlist.filter(item => String(item.offerId) !== String(offerId));
         
         saveWishlist(wishlist);
+
+        updateWishlistCounter();
         
         // Force a re-fetch from localStorage to verify the save
         let updatedWishlist = getWishlist();
@@ -104,6 +108,21 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = `product.html?id=${encodedOfferId}`;
         // production url
         // window.location.href = `/product?id=${encodedOfferId}`;
+    }
+
+    function updateWishlistCounter() {
+        const wishlist = getWishlist();
+        const count = wishlist.length;
+        localStorage.setItem('wishlistCount', count);
+        updateWishlistCounterUI(count);
+    }
+
+    function updateWishlistCounterUI(count) {
+        const counterElement = document.querySelector('.heart-button .wishlist-counter');
+        if (counterElement) {
+            counterElement.textContent = count;
+            counterElement.style.display = 'block';
+        }
     }
 
     // Check if the wishlist container exists before trying to display the wishlist

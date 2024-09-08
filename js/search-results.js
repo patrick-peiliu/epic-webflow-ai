@@ -7,6 +7,7 @@ let currentSortOption = 'relevant';
 // Main initialization function
 function initializeSearchResults() {
     loadInitialResults();
+    updateWishlistCounter();
     // Wait for the DOM to be fully loaded before setting up event listeners
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', setupEventListeners);
@@ -269,6 +270,7 @@ function setupWishlistFunctionality() {
             const productCard = wishlistIcon.closest('.card');
             const productId = productCard.dataset.productId;
             toggleWishlist(productCard);
+            updateWishlistCounter();
         }
     });
 }
@@ -308,6 +310,40 @@ function checkWishlistStatus(productCard) {
     const productDetails = JSON.parse(productCard.dataset.productDetails);
     const isWishlisted = wishlist.some(item => item.offerId === productDetails.offerId);
     updateWishlistButton(productCard, isWishlisted);
+}
+
+function getWishlist() {
+    const wishlistJSON = localStorage.getItem('wishlist');
+    try {
+        if (!wishlistJSON) {
+            console.log('Wishlist is empty or not set');
+            return [];
+        }
+        const parsedWishlist = JSON.parse(wishlistJSON);
+        if (!Array.isArray(parsedWishlist)) {
+            console.error('Parsed wishlist is not an array:', parsedWishlist);
+            return [];
+        }
+        return parsedWishlist;
+    } catch (error) {
+        console.error('Error parsing wishlist:', error);
+        return [];
+    }
+}
+
+function updateWishlistCounter() {
+    const wishlist = getWishlist();
+    const count = wishlist.length;
+    localStorage.setItem('wishlistCount', count);
+    updateWishlistCounterUI(count);
+}
+
+function updateWishlistCounterUI(count) {
+    const counterElement = document.querySelector('.heart-button .wishlist-counter');
+    if (counterElement) {
+        counterElement.textContent = count;
+        counterElement.style.display = 'block';
+    }
 }
 
 // Call this function after loading the search results
