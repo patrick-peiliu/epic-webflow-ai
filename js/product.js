@@ -188,64 +188,132 @@ function displayFullProductDetails(productDetails, localDataUsed) {
 
     populateOriginalUrl(productDetails);
 
-    // Function to update main image and highlight selected image
     function updateMainImage(clickedElement, container) {
-        if (mainImageElement) {
+        const mainImageContainer = document.getElementById('product-image-main');
+        let mainMediaElement = mainImageContainer.querySelector('img.img-product, video.img-product');
+
+        if (clickedElement.tagName.toLowerCase() === 'video' || clickedElement.classList.contains('video-container')) {
+            // If it's a video, replace or update the video element
+            const videoSrc = clickedElement.src || clickedElement.querySelector('video')?.src;
+            if (mainMediaElement?.tagName.toLowerCase() !== 'video') {
+                const videoElement = document.createElement('video');
+                videoElement.src = videoSrc;
+                videoElement.controls = true;
+                videoElement.className = 'img-product'; // Use the same class as images
+                videoElement.autoplay = false;
+                videoElement.muted = true;
+                if (mainMediaElement) {
+                    mainMediaElement.replaceWith(videoElement);
+                } else {
+                    mainImageContainer.prepend(videoElement);
+                }
+                mainMediaElement = videoElement;
+            } else {
+                mainMediaElement.src = videoSrc;
+            }
+        } else {
+            // If it's an image, replace or update the image element
             const newSrc = clickedElement.src || clickedElement.querySelector('img')?.src;
             if (newSrc) {
-                mainImageElement.src = newSrc;
-                mainImageElement.alt = clickedElement.alt || clickedElement.querySelector('img')?.alt || '';
-            } else {
-                console.log('No image source found for this spec');
-                // Optionally, set a placeholder image or do nothing
+                if (mainMediaElement?.tagName.toLowerCase() !== 'img') {
+                    const imgElement = document.createElement('img');
+                    imgElement.className = 'img-product';
+                    if (mainMediaElement) {
+                        mainMediaElement.replaceWith(imgElement);
+                    } else {
+                        mainImageContainer.prepend(imgElement);
+                    }
+                    mainMediaElement = imgElement;
+                }
+                mainMediaElement.src = newSrc;
+                mainMediaElement.alt = clickedElement.alt || clickedElement.querySelector('img')?.alt || '';
             }
         }
-        
+
         // Remove 'selected' class from all elements in the container
-        container.querySelectorAll('.spec-container, .img-product, .spec-image').forEach(el => {
+        container.querySelectorAll('.product-variable, .spec-container').forEach(el => {
             el.classList.remove('selected');
         });
-        
-        // Add 'selected' class to the clicked element or its parent spec-container
-        const targetElement = clickedElement.closest('.spec-container') || clickedElement;
-        targetElement.classList.add('selected');
+
+        // Add 'selected' class to the clicked element's parent container
+        const targetElement = clickedElement.closest('.product-variable') || clickedElement.closest('.spec-container');
+        if (targetElement) {
+            targetElement.classList.add('selected');
+        }
+
+        // Update spec selection if applicable
+        const specText = clickedElement.closest('.spec-container')?.querySelector('.spec-text')?.textContent;
+        if (specText) {
+            updateSpecSelection(specText);
+        }
     }
 
+    function updateSpecSelection(specText) {
+        const specSelectionField = document.getElementById('spec-selection');
+        if (specSelectionField) {
+            specSelectionField.value = specText;
+        }
+    }
+    
     // Event listener for additional product images
     if (additionalImagesContainer) {
         additionalImagesContainer.addEventListener('click', function(event) {
-            const clickedImg = event.target.closest('.img-product');
-            if (clickedImg) {
-                updateMainImage(clickedImg, additionalImagesContainer);
+            const clickedElement = event.target.closest('.img-product, video');
+            if (clickedElement) {
+                updateMainImage(clickedElement, this);
             }
         });
     }
 
-    // Populate additional product images
-    if (additionalImagesContainer && productDetails.productImage && productDetails.productImage.images.length > 0) {
-        additionalImagesContainer.innerHTML = ''; // Clear existing content
-        productDetails.productImage.images.forEach((imageUrl, index) => {
-            const imgContainer = document.createElement('div');
-            imgContainer.className = 'product-variable';
-            
-            const imgElement = document.createElement('img');
-            imgElement.src = imageUrl;
-            imgElement.alt = `${productDetails.subjectTrans} - Image ${index + 1}`;
-            imgElement.className = 'img-product';
-            imgElement.loading = 'lazy';
-            imgElement.width = '583';
-            
-            imgContainer.appendChild(imgElement);
-            additionalImagesContainer.appendChild(imgContainer);
-        });
-    }
-    
-    function updateSpecSelection(text) {
-        const specSelectionField = document.getElementById('spec-selection');
-        if (specSelectionField) {
-            specSelectionField.value = text;
+    // Function to populate additionalImagesContainer
+    function populateAdditionalImages(productDetails) {
+        const additionalImagesContainer = document.getElementById('product-image-additional');
+        if (additionalImagesContainer && productDetails.productImage && productDetails.productImage.images.length > 0) {
+            additionalImagesContainer.innerHTML = ''; // Clear existing content
+
+            // Add video container if mainVideo exists
+            if (productDetails.mainVideo) {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'product-variable video-container';
+                
+                const videoElement = document.createElement('video');
+                videoElement.src = productDetails.mainVideo;
+                videoElement.className = 'img-product video-product';
+                videoElement.autoplay = false;
+                videoElement.muted = true;
+                videoElement.controls = false; // Remove controls
+                videoElement.preload = 'metadata'; // Only load metadata for thumbnail
+                
+                videoContainer.appendChild(videoElement);
+                additionalImagesContainer.appendChild(videoContainer);
+            }
+
+            // Add all product images
+            productDetails.productImage.images.forEach((imageUrl, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'product-variable';
+                
+                const imgElement = document.createElement('img');
+                imgElement.src = imageUrl;
+                imgElement.alt = `${productDetails.subjectTrans} - Image ${index + 1}`;
+                imgElement.className = 'img-product';
+                imgElement.loading = 'lazy';
+                imgElement.width = '583';
+                
+                imgContainer.appendChild(imgElement);
+                additionalImagesContainer.appendChild(imgContainer);
+            });
+
+            // Select the first item (video or image) by default
+            const firstItem = additionalImagesContainer.querySelector('.product-variable');
+            if (firstItem) {
+                updateMainImage(firstItem, additionalImagesContainer);
+            }
         }
     }
+
+    // Call this function when loading the product details
+    populateAdditionalImages(productDetails);
 
     if (additionalImagesContainerVar && productDetails.productSkuInfos && productDetails.productSkuInfos.length > 0) {
         additionalImagesContainerVar.innerHTML = ''; // Clear existing content

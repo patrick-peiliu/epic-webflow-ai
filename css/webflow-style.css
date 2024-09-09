@@ -126,6 +126,36 @@
 }
 
 /* <--------------- product page css ---------------->*/
+.video-product {
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.video-container {
+  position: relative;
+  display: inline-block;
+}
+
+.video-container::before {
+  content: '\25B6'; /* Unicode character for a play triangle */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .hidden-field {
   position: absolute;
   width: 1px;
@@ -203,10 +233,11 @@
   overflow-x: auto;
 }
 
-#product-image-main img {
+#product-image-main img,
+#product-image-main video {
   width: 583px;  /* Set a fixed width */
   height: 583px; /* Set a fixed height */
-  object-fit: contain; /* This ensures the image maintains its aspect ratio */
+  object-fit: contain; /* This ensures the image/video maintains its aspect ratio */
 }
 
 #product-image-additional .img-product {
@@ -215,8 +246,9 @@
   object-fit: cover; /* This will crop the image to fill the space if needed */
 }
 
-.img-product.selected {
-  border-color: #ffd700; /* Golden color for the selected item */
+.product-variable.selected .img-product,
+.product-variable.selected .video-container {
+  border: 2px solid #ffd700;
   box-shadow: 0 0 0 2px #ffd700;
 }
 
