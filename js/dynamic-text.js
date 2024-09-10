@@ -457,17 +457,48 @@ function displayTopKeywords(data) {
     loopHolder.style.animation = 'scrollKeywords 30s linear infinite';
 }
 
-async function fetchAndPopulateGallery() {
-    const cachedGallery = getCachedData('galleryItems');
-    if (cachedGallery) {
-        populateGallery(cachedGallery);
-        return;
+function populateGallery(galleryItems) {
+    const galleryContainer = document.getElementById('gallery-container');
+    if (galleryContainer) {
+        galleryContainer.innerHTML = ''; // Clear existing content
+
+        // Only use the first 5 items
+        galleryItems.slice(0, 5).forEach((item, index) => {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            
+            const img = document.createElement('img');
+            img.src = item.imageUrl || 'images/placeholder-image.png';
+            img.alt = item.subjectTrans;
+            img.loading = 'lazy';
+
+            galleryItem.appendChild(img);
+            galleryContainer.appendChild(galleryItem);
+        });
+    } else {
+        console.error('Gallery container not found');
+    }
+}
+
+async function fetchAndPopulateGallery(forceRefresh = false) {
+    const refreshButton = document.getElementById('refresh-gallery');
+    
+    if (forceRefresh) {
+        refreshButton.classList.add('loading');
+    }
+
+    if (!forceRefresh) {
+        const cachedGallery = getCachedData('galleryItems');
+        if (cachedGallery) {
+            populateGallery(cachedGallery);
+            return;
+        }
     }
 
     const recommendEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/recommend';
     const requestBody = {
         "beginPage": 1,
-        "pageSize": 8,
+        "pageSize": 5,
         "country": "en"
     };
 
@@ -494,78 +525,21 @@ async function fetchAndPopulateGallery() {
         if (galleryContainer) {
             galleryContainer.innerHTML = '<p>Unable to load gallery items. Please try again later.</p>';
         }
-    }
-}
-
-function populateGallery(galleryItems) {
-    const galleryContainer = document.getElementById('gallery-container');
-    if (galleryContainer) {
-        galleryContainer.innerHTML = ''; // Clear existing content
-
-        galleryItems.forEach((item, index) => {
-            const galleryItem = document.createElement('div');
-            galleryItem.className = 'gallery-item';
-            
-            const img = document.createElement('img');
-            img.src = item.imageUrl || 'images/placeholder-image.png';
-            img.alt = item.subjectTrans;
-            img.loading = 'lazy';
-
-            galleryItem.appendChild(img);
-            galleryContainer.appendChild(galleryItem);
-        });
-    } else {
-        console.error('Gallery container not found');
+    } finally {
+        if (forceRefresh) {
+            refreshButton.classList.remove('loading');
+        }
     }
 }
 
 // Call these functions when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     fetchTopKeywords();
-    fetchAndPopulateGallery();
+    fetchAndPopulateGallery(false); // Load from cache if available
     updateWishlistCounter();
+
+    const refreshButton = document.getElementById('refresh-gallery');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', () => fetchAndPopulateGallery(true)); // Force refresh when button is clicked
+    }
 });
-
-// // Function to replace image sources
-// function replaceImageSources() {
-//     const imageUrls = [
-//         "https://cbu01.alicdn.com/img/ibank/O1CN018MFFKj2ItbZ6I0cDx_!!2212958579344-0-cib.jpg",
-//         "https://cbu01.alicdn.com/O1CN01QwJWyN1GHvVOXN4lD_!!1745930598-0-cib.jpg",
-//         "https://cbu01.alicdn.com/img/ibank/O1CN01GewAV11w0ig2hCNaL_!!3903836246-0-cib.jpg",
-//         "https://cbu01.alicdn.com/img/ibank/O1CN01EKPXwy1HyoO4QjkfB_!!2215849650827-0-cib.jpg",
-//         "https://cbu01.alicdn.com/img/ibank/18002844909_79330753.jpg",
-//         "https://cbu01.alicdn.com/O1CN013t1r6F1zQJkkJ3Wme_!!2206529356708-0-cib.jpg"
-//     ];
-
-//     // Select all elements with IDs starting with "step-img-drag-"
-//     const elements = document.querySelectorAll('[id^="step-img-drag-"]');
-    
-//     elements.forEach((element, index) => {
-//         const img = element.querySelector('img');
-        
-//         if (img && index < imageUrls.length) {
-//             // Use setAttribute to change the src
-//             img.setAttribute('src', imageUrls[index]);
-//             // Also update srcset if it exists
-//             if (img.hasAttribute('srcset')) {
-//                 img.setAttribute('srcset', imageUrls[index]);
-//             }
-//         } else if (img) {
-//             console.log(`No URL available for element ${element.id}, image source not replaced`);
-//         } else {
-//             console.log(`No img tag found in element ${element.id}`);
-//         }
-//     });
-// }
-
-// // Function to ensure the script runs after Webflow's page load
-// function runAfterPageLoad() {
-//     if (document.readyState === 'complete') {
-//         replaceImageSources();
-//     } else {
-//         window.addEventListener('load', replaceImageSources);
-//     }
-// }
-
-// // Run the script
-// runAfterPageLoad();
