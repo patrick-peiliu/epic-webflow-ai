@@ -731,7 +731,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1100px;
   margin-bottom: 20px; /* Adjust this value as needed */
   gap: 8px;
 }
@@ -3570,16 +3570,63 @@ textarea.w-input, textarea.w-select {
   margin-left: 30px;
 }
 
+.drag-instruction-container {
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.h3._40-44.italic {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 20px;
+  z-index: 2;
+  position: relative;
+}
+
+.img-arrow {
+  width: 41px;
+  height: auto;
+  position: absolute;
+}
+
+.img-arrow-1 {
+  transform: rotate(15deg);
+  right: 160px; /* Adjust this value to move left/right */
+  bottom: 40px; /* Adjust this value to move up/down */
+}
+
+.img-arrow-down {
+  transform: rotate(-15deg);
+  left: 200px; /* Adjust this value to move left/right */
+  top: 85px; /* Adjust this value to move up/down */
+  max-width: 80px;
+  margin-top: -32px;
+}
+
+.parent-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: hidden; /* In case the .div-img-bg is wider than the viewport */
+}
+
 .div-img-bg {
-  background-image: url("../images/headerinspiration-bg.png");
-  background-position: 0 0;
+  background-image: url("https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66dd62108058bad06fee7f97_dragZone.png");
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: 100% 100%;
+  width: 1100px;
+  height: 520px; /* Adjust this value to your desired height */
+  max-height: 1000px; /* Match this with the height */
+  margin: 0 auto; /* This centers the div horizontally */
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: auto;
-  height: 680px;
-  display: flex;
 }
 
 .h3 {
@@ -4138,10 +4185,6 @@ textarea.w-input, textarea.w-select {
   .section-42 {
     padding-top: 100px;
     padding-bottom: 100px;
-  }
-
-  .div-img-bg {
-    height: 680px;
   }
 
   .contact-div-ing-bg {
