@@ -773,6 +773,48 @@ body, html {
   cursor: pointer;
 }
 
+.mobile-camera-button {
+  display: none; /* Hide by default for desktop */
+}
+
+/* Mobile styles */
+@media screen and (max-width: 767px) {
+  .image-upload-container {
+      width: 100%;
+      height: auto;
+      background-image: none;
+      box-shadow: none;
+      padding: 0;
+  }
+
+  .mobile-camera-button {
+    display: block;
+    width: 100%; /* Make the button wider, adjust as needed */
+    max-width: 400px; /* Set a maximum width if desired */
+    margin: 0 auto; /* Center the button horizontally */
+    background-color: #FFD700; /* Yellow color */
+    color: #000000;
+    padding: 15px 80px;
+    border: none;
+    border-radius: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Center the text horizontally */
+  }
+
+  .mobile-camera-button:hover {
+      background-color: #FFC700; /* Slightly darker yellow on hover */
+  }
+
+  .button-icon {
+    width: 10px; /* Adjust as needed */
+    height: 10px; /* Adjust as needed */
+    margin-left: 10px; /* Space between text and icon */
+  }
+}
+
 .hidden-input {
   position: absolute;
   width: 100%;
