@@ -532,6 +532,42 @@
 }
 
 /* <--------------- Index page css ---------------->*/
+body, html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Hide the mobile camera image by default */
+.mobile-camera-container {
+  display: none;
+}
+
+/* Desktop styles */
+.desktop-content {
+  display: block; /* Show the desktop content by default */
+}
+
+/* Mobile styles */
+@media screen and (max-width: 767px) {
+  .mobile-camera-container {
+    display: block;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Use 100% instead of 100vw */
+    overflow: hidden; /* Hide any overflow */
+  }
+
+  .mobile-camera-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure the image covers the container */
+    object-position: center; /* Center the image within the container */
+  }
+
+  .desktop-content {
+    display: none !important; /* Hide the desktop content on mobile */
+  }
+}
+
 .floating-upload-div {
   display: none; /* Hide by default */
 }
@@ -762,7 +798,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
   padding: 20px;
   box-sizing: border-box;
 }
