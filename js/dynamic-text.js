@@ -69,6 +69,131 @@ function updateWishlistCounterUI(count) {
     }
 }
 
+function handleFileSelect(e) {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+        handleFiles(files);
+    } else {
+        console.log('No file selected');
+    }
+}
+
+function fixExifOrientation(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const view = new DataView(e.target.result);
+            if (view.getUint16(0, false) != 0xFFD8) {
+                resolve(file); // Not a JPEG
+                return;
+            }
+            const length = view.byteLength;
+            let offset = 2;
+            while (offset < length) {
+                const marker = view.getUint16(offset, false);
+                offset += 2;
+                if (marker == 0xFFE1) {
+                    if (view.getUint32(offset += 2, false) != 0x45786966) {
+                        resolve(file); // No EXIF data
+                        return;
+                    }
+                    const little = view.getUint16(offset += 6, false) == 0x4949;
+                    offset += view.getUint32(offset + 4, little);
+                    const tags = view.getUint16(offset, little);
+                    offset += 2;
+                    for (let i = 0; i < tags; i++) {
+                        if (view.getUint16(offset + (i * 12), little) == 0x0112) {
+                            const orientation = view.getUint16(offset + (i * 12) + 8, little);
+                            // You might want to rotate the image here based on the orientation
+                            console.log('EXIF Orientation:', orientation);
+                            resolve(file);
+                            return;
+                        }
+                    }
+                } else if ((marker & 0xFF00) != 0xFF00) break;
+                else offset += view.getUint16(offset, false);
+            }
+            resolve(file);
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+async function compressImage(file, maxWidth, maxHeight, quality) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob(resolve, 'image/jpeg', quality);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function handleFiles(files) {
+    try {
+        if (files && files.length > 0) {
+            let file = await fixExifOrientation(files[0]);
+            console.log('File details:', {
+                name: file.name,
+                type: file.type,
+                size: file.size + ' bytes'
+            });
+
+            if (file.type.startsWith('image/')) {
+                // Compress image if it's larger than 300KB
+                if (file.size > 300 * 1024) {
+                    const compressedBlob = await compressImage(file, 1920, 1080, 0.7);
+                    file = new File([compressedBlob], file.name, { type: 'image/jpeg' });
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64String = e.target.result.split(',')[1];
+                    sendImageDataAndRedirect(base64String, false);
+                };
+                reader.onerror = function(error) {
+                    console.error('Error reading file:', error);
+                    alert('Error reading file: ' + error.message);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.log('Not an image file');
+                alert('Please select an image file.');
+            }
+        } else {
+            console.log('No file captured');
+        }
+    } catch (error) {
+        console.error('Error processing file:', error);
+        alert('Error processing file: ' + error.message);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const uploadDropZone = document.getElementById('uploadDropZone');
     const searchDropZone = document.getElementById('searchDropZone');
@@ -137,127 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function isValidImageUrl(url) {
         return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
-    }
-
-    function handleFileSelect(e) {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            handleFiles(files);
-        } else {
-            console.log('No file selected');
-        }
-    }
-
-    function fixExifOrientation(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const view = new DataView(e.target.result);
-                if (view.getUint16(0, false) != 0xFFD8) {
-                    resolve(file); // Not a JPEG
-                    return;
-                }
-                const length = view.byteLength;
-                let offset = 2;
-                while (offset < length) {
-                    const marker = view.getUint16(offset, false);
-                    offset += 2;
-                    if (marker == 0xFFE1) {
-                        if (view.getUint32(offset += 2, false) != 0x45786966) {
-                            resolve(file); // No EXIF data
-                            return;
-                        }
-                        const little = view.getUint16(offset += 6, false) == 0x4949;
-                        offset += view.getUint32(offset + 4, little);
-                        const tags = view.getUint16(offset, little);
-                        offset += 2;
-                        for (let i = 0; i < tags; i++) {
-                            if (view.getUint16(offset + (i * 12), little) == 0x0112) {
-                                const orientation = view.getUint16(offset + (i * 12) + 8, little);
-                                // You might want to rotate the image here based on the orientation
-                                console.log('EXIF Orientation:', orientation);
-                                resolve(file);
-                                return;
-                            }
-                        }
-                    } else if ((marker & 0xFF00) != 0xFF00) break;
-                    else offset += view.getUint16(offset, false);
-                }
-                resolve(file);
-            };
-            reader.onerror = reject;
-            reader.readAsArrayBuffer(file);
-        });
-    }
-
-    async function compressImage(file, maxWidth, maxHeight, quality) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height *= maxWidth / width;
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxHeight) {
-                            width *= maxHeight / height;
-                            height = maxHeight;
-                        }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    canvas.toBlob(resolve, 'image/jpeg', quality);
-                };
-                img.onerror = reject;
-                img.src = e.target.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-    
-    async function handleFiles(files) {
-        try {
-            let file = await fixExifOrientation(files[0]);
-            console.log('File details:', {
-                name: file.name,
-                type: file.type,
-                size: file.size + ' bytes'
-            });
-    
-            if (file.type.startsWith('image/')) {
-                // Compress image if it's larger than 300KB
-                if (file.size > 300 * 1024) {
-                    const compressedBlob = await compressImage(file, 1920, 1080, 0.7);
-                    file = new File([compressedBlob], file.name, { type: 'image/jpeg' });
-                }
-    
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64String = e.target.result.split(',')[1];
-                    sendImageDataAndRedirect(base64String, false);
-                };
-                reader.onerror = function(error) {
-                    console.error('Error reading file:', error);
-                    alert('Error reading file: ' + error.message);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                console.log('Not an image file');
-                alert('Please select an image file.');
-            }
-        } catch (error) {
-            console.error('Error processing file:', error);
-            alert('Error processing file: ' + error.message);
-        }
     }
 });
 
@@ -542,4 +546,89 @@ document.addEventListener('DOMContentLoaded', function() {
     if (refreshButton) {
         refreshButton.addEventListener('click', () => fetchAndPopulateGallery(true)); // Force refresh when button is clicked
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const floatingUploadDiv = document.getElementById('floatingUploadDiv');
+    const floatingImageUpload = document.getElementById('floatingImageUpload');
+
+    let isDragging = false;
+    let startX, startY, startLeft, startTop;
+    let startTime, isLongPress;
+    const longPressThreshold = 300; // milliseconds
+    const tapThreshold = 10; // pixels
+    let lastTouchEnd = 0;
+    const touchEndDelay = 300; // milliseconds
+
+    floatingUploadDiv.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    function handleTouchStart(e) {
+        startTime = Date.now();
+        isLongPress = false;
+        isDragging = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        startLeft = floatingUploadDiv.offsetLeft;
+        startTop = floatingUploadDiv.offsetTop;
+        e.preventDefault();
+
+        setTimeout(() => {
+            if (Date.now() - startTime >= longPressThreshold) {
+                isLongPress = true;
+                isDragging = true;
+            }
+        }, longPressThreshold);
+    }
+
+    function handleTouchMove(e) {
+        if (!isLongPress) return;
+
+        let clientX = e.touches[0].clientX;
+        let clientY = e.touches[0].clientY;
+
+        let deltaX = clientX - startX;
+        let deltaY = clientY - startY;
+
+        let newLeft = startLeft + deltaX;
+        let newTop = startTop + deltaY;
+
+        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - floatingUploadDiv.offsetWidth));
+        newTop = Math.max(0, Math.min(newTop, window.innerHeight - floatingUploadDiv.offsetHeight));
+
+        floatingUploadDiv.style.right = 'auto';
+        floatingUploadDiv.style.transform = 'none';
+        floatingUploadDiv.style.left = newLeft + 'px';
+        floatingUploadDiv.style.top = newTop + 'px';
+
+        e.preventDefault();
+    }
+
+    function handleTouchEnd(e) {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        const now = Date.now();
+        if (now - lastTouchEnd <= touchEndDelay) {
+            // Ignore touches that are too close together in time
+            return;
+        }
+        lastTouchEnd = now;
+
+        if (!isLongPress && !isDragging && distance < tapThreshold) {
+            setTimeout(() => {
+                floatingImageUpload.click();
+            }, 100); // Short delay to ensure it's not part of a drag
+        }
+        isDragging = false;
+        isLongPress = false;
+    }
+
+    floatingImageUpload.addEventListener('change', function(event) {
+        handleFiles(event.target.files);
+    });
 });

@@ -532,6 +532,46 @@
 }
 
 /* <--------------- Index page css ---------------->*/
+.floating-upload-div {
+  display: none; /* Hide by default */
+}
+
+@media screen and (max-width: 768px) {
+  .floating-upload-div {
+    position: fixed;
+    top: 55%;
+    left: 5%;
+    /* transform: translate(calc(-100% - 20px), -50%); */
+    width: 60px;
+    height: 60px;
+    background-color: #1d3759;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+  }
+}
+
+.floating-upload-div:active {
+  opacity: 0.8;
+}
+
+.floating-upload-div img {
+  width: 60px;
+  height: 60px;
+}
+
+.floating-image-input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
 
 .photo-find {
   /* Photo-find your first hot product or your next best seller. */
@@ -682,7 +722,7 @@
   height: 420px; /* Set a specific height */
   margin: 0 auto; /* Center the container */
   padding: 20px;
-  background-image: url('https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66dd4eb53de86b5508a5094a_uploadZone.png');
+  background-image: url('https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66e13dd78b7ffd26e26e66cf_dropArea.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
