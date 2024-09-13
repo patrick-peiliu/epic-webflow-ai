@@ -532,6 +532,65 @@
 }
 
 /* <--------------- Index page css ---------------->*/
+.steps-mobile {
+  display: none;
+}
+
+@media screen and (max-width: 767px) {
+  .steps-vertical.desktop-steps {
+      display: none;
+  }
+
+  .steps-mobile {
+      display: block;
+  }
+
+  .step-mobile {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 50px;
+  }
+
+  .number-circle-yellow {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #FFD700;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 15px;
+      flex-shrink: 0;
+  }
+
+  .h3-24-30.white {
+      font-size: 22px;
+      margin: 0;
+  }
+
+  .step-content {
+      flex-grow: 1;
+  }
+
+  .h3-24-30 {
+      font-size: 18px;
+      margin-bottom: 5px;
+  }
+
+  .p-16-20 {
+      font-size: 14px;
+      line-height: 1.4;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  #hot-source-how-it-works.section {
+    margin-bottom: 0px; /* Adjust this value as needed */
+    /* or */
+    padding-bottom: 0px; /* Use this if margin doesn't work */
+  }
+}
+
 body, html {
   width: 100%;
   overflow-x: hidden;
@@ -554,6 +613,12 @@ body, html {
     height: 100vh; /* Full viewport height */
     width: 100vw; /* Use 100% instead of 100vw */
     overflow: hidden; /* Hide any overflow */
+  }
+
+  .mobile-camera-container {
+    margin-top: 0px; /* Adjust this value as needed */
+    /* or */
+    padding-top: 0px; /* Use this if margin doesn't work */
   }
 
   .mobile-camera-image {
