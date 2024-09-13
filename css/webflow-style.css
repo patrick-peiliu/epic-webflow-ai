@@ -876,8 +876,8 @@ body, html {
 }
 
 .refresh-button {
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background-color: #ffd700;
   border: none;
@@ -894,8 +894,8 @@ body, html {
 }
 
 .refresh-button .loading-icon {
-  width: 20px;
-  height: 20px;
+  width: 35px;
+  height: 35px;
 }
 
 .refresh-button.loading .loading-icon {
