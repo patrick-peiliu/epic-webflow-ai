@@ -252,6 +252,142 @@
   box-shadow: 0 0 0 2px #ffd700;
 }
 
+@media screen and (max-width: 767px) {
+  .container-regular {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 15px !important;
+  }
+
+  .w-layout-blockcontainer {
+    max-width: none !important;
+  }
+
+  .w-container {
+    max-width: none !important;
+  }
+
+  .product-grid {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  #product-image-main {
+    height: 100%; /* Full viewport height */
+    width: 80vw; /* Use 100% instead of 100vw */
+    object-fit: contain; /* This ensures the image/video maintains its aspect ratio */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    order: 1; /* Ensure it's at the top */
+  }
+
+  #product-image-main img,
+  #product-image-main video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  #product-image-additional {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    margin-bottom: 15px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    order: 2; /* Place it after the main image */
+  }
+
+  #product-image-additional img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  #div-product-description {
+    width: 100%;
+    padding-left: 0;
+    order: 3; /* Place it at the bottom */
+  }
+
+  #product-image-additional-variables {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    max-height: none; /* Remove max-height limitation */
+    overflow-y: visible; /* Allow content to expand */
+  }
+
+  .spec-container {
+    flex: 0 0 calc(50% - 5px); /* 2 items per row on mobile */
+    max-width: calc(50% - 5px);
+    margin-bottom: 10px;
+  }
+
+  .spec-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  #product-image-additional-variables {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 10px !important;
+    width: 100% !important;
+    max-width: 700px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+  }
+
+    .spec-row {
+    display: flex !important;
+    flex-wrap: wrap !important; /* Allow wrapping on mobile */
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .spec-container {
+    flex: 0 0 calc(50% - 5px) !important; /* 2 items per row on mobile */
+    max-width: calc(50% - 5px) !important;
+    margin-bottom: 10px !important;
+  }
+
+  .spec-container img {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important; /* Maintain square aspect ratio */
+    object-fit: contain !important;
+  }
+
+  .spec-text {
+    font-size: 12px !important; /* Adjust as needed */
+    line-height: 1.2 !important;
+    margin-top: 5px !important;
+    text-align: center !important;
+  }
+
+  #product-image-additional {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    justify-content: start !important;
+  }
+}
+
 #product-image-additional-variables {
   display: flex;
   flex-direction: column;
@@ -274,8 +410,8 @@
 }
 
 .spec-container {
-  flex: 0 0 calc(16.666% - 8.5px); /* (100% - 5 * 10px gap) / 6 */
-  max-width: calc(16.666% - 8.5px);
+  flex: 0 0 calc(20% - 8px); /* (100% - 4 * 10px gap) / 5 */
+  max-width: calc(20% - 8px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -307,11 +443,11 @@
   color: #333;
   font-weight: bold;
   width: 100%;
-  height: 2.8em; /* Approximately 2 lines of text */
-  line-height: 1.4em; /* Adjust as needed */
+  height: 4.2em; /* Approximately 3 lines of text (1.4em * 3) */
+  line-height: 1.4em; /* Keep this the same */
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3; /* Changed to 3 lines */
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
 }
