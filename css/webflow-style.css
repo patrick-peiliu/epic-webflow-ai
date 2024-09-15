@@ -386,6 +386,84 @@
     gap: 10px !important;
     justify-content: start !important;
   }
+
+  .w-layout-blockcontainer.container-regular.w-container {
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    box-sizing: border-box !important;
+  }
+
+  .contact-form.product-order.w-form {
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Adjust inner elements if necessary */
+  .contact-form.product-order.w-form form {
+    width: 100% !important;
+  }
+
+  .contact-form.product-order.w-form input,
+  .contact-form.product-order.w-form textarea,
+  .contact-form.product-order.w-form select {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr !important; /* Change to a single column */
+    grid-gap: 0 !important; /* Remove gap between grid items */
+    display: flex !important; /* Change to flex for more control */
+    flex-direction: column !important;
+  }
+
+  .details-block {
+    width: 100% !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+  }
+
+  .w-layout-hflex.description-line-details {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    margin-bottom: 15px !important;
+  }
+
+  .div-align-left {
+    width: 30% !important; /* Adjust this value as needed */
+    min-width: 10px !important; /* Ensure minimum width for labels */
+    margin-right: 10px !important;
+  }
+
+  .div-align-right {
+    flex: 1 !important;
+    text-align: left !important;
+  }
+
+  .p-16-20 {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+  }
+
+  .p-16-20.bold {
+    font-weight: 500 !important;
+    color: #333 !important;
+  }
+
+  /* Style for group headers if needed */
+  .details-block h3 {
+    font-size: 16px !important;
+    margin-bottom: 10px !important;
+    color: #333 !important;
+  }
 }
 
 #product-image-additional-variables {
