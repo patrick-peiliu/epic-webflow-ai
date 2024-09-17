@@ -466,6 +466,55 @@
   }
 }
 
+.description-line-details {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.div-align-left {
+  width: 30%;
+  min-width: 100px;
+  margin-right: 10px;
+}
+
+.div-align-right {
+  flex: 1 !important;
+  text-align: left !important;
+  position: relative;
+  cursor: pointer;
+  padding-right: 20px; /* Add padding to make room for the chevron */
+}
+
+.div-align-right p {
+  max-height: 2.8em; /* Approximately 2 lines of text */
+  overflow: hidden;
+  margin-bottom: 0;
+  transition: max-height 0.3s ease;
+  padding-right: 5px; /* Add padding to the right of the text */
+  box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+.div-align-right.expanded p {
+  max-height: none;
+}
+
+.chevron-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  width: 10px;
+  height: 10px;
+  background-image: url('https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66e37627524074ebe4efdbb7_che.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: transform 0.3s ease;
+}
+
+.div-align-right.expanded .chevron-icon {
+  transform: translateY(-50%) rotate(-90deg);
+}
+
 #product-image-additional-variables {
   display: flex;
   flex-direction: column;

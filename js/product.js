@@ -438,18 +438,22 @@ function displayFullProductDetails(productDetails, localDataUsed) {
                 }
 
                 detailBlock.innerHTML = `
-                    <div class="w-layout-hflex description-line-details">
-                        <div class="div-align-left">
-                            <p class="p-16-20">${attribute.attributeNameTrans}:</p>
-                        </div>
-                        <div class="div-align-right">
-                            <p class="p-16-20 bold">${rightPContent}</p>
-                        </div>
-                    </div>
-                `;
-                detailsContainer.appendChild(detailBlock);
+                <div class="w-layout-hflex description-line-details">
+                  <div class="div-align-left">
+                    <p class="p-16-20">${attribute.attributeNameTrans}:</p>
+                  </div>
+                  <div class="div-align-right">
+                    <p class="p-16-20 bold">${rightPContent}</p>
+                    <div class="chevron-icon"></div>
+                  </div>
+                </div>
+              `;
+              detailsContainer.appendChild(detailBlock);
             }
         });
+
+        // Initialize expandable text after all details are added
+        initializeExpandableText();
     }
 }
 
@@ -518,3 +522,27 @@ function updateWishlistCounterUI(count) {
         counterElement.style.display = 'block';
     }
 }
+
+function initializeExpandableText() {
+    const rightDivs = document.querySelectorAll('.div-align-right');
+    
+    rightDivs.forEach(div => {
+      const paragraph = div.querySelector('p');
+      if (paragraph && paragraph.scrollHeight > paragraph.clientHeight) {
+        div.classList.add('expandable');
+        
+        div.addEventListener('click', function(event) {
+          // Prevent the click from triggering on child elements
+          if (event.target === div || event.target === paragraph || event.target.classList.contains('chevron-icon')) {
+            this.classList.toggle('expanded');
+          }
+        });
+      } else {
+        // Hide the chevron if content doesn't need expansion
+        const chevron = div.querySelector('.chevron-icon');
+        if (chevron) {
+          chevron.style.display = 'none';
+        }
+      }
+    });
+  }
