@@ -295,20 +295,57 @@
 
   #product-image-additional {
     display: flex;
-    overflow-x: auto;
+    flex-wrap: nowrap; /* Prevent wrapping to new line */
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
     gap: 10px;
     margin-bottom: 15px;
     -webkit-overflow-scrolling: touch;
     width: 100%;
     order: 2; /* Place it after the main image */
+    width: 100% !important;
+    margin: 0 auto !important; /* Center the container */
+    border-radius: 8px !important;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #888 #f1f1f1; /* For Firefox */
   }
 
-  #product-image-additional img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    flex-shrink: 0;
+  /* Webkit scrollbar styles */
+#product-image-additional::-webkit-scrollbar {
+  height: 6px;
+}
+
+#product-image-additional::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+#product-image-additional::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+#product-image-additional::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+  .product-variable {
+    flex: 0 0 calc(33.333% - 7px) !important; /* 3 items per row on larger screens */
+    max-width: calc(33.333% - 7px) !important;
+    margin-bottom: 10px !important;
+    position: relative !important;
   }
+
+  #product-image-additional .img-product,
+  #product-image-additional .video-product {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important; /* Maintain square aspect ratio */
+    object-fit: cover !important;
+    border-radius: 8px !important;
+  }
+
+
 
   #div-product-description {
     width: 100%;
@@ -382,7 +419,7 @@
 
   #product-image-additional {
     display: flex !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     gap: 10px !important;
     justify-content: start !important;
   }
