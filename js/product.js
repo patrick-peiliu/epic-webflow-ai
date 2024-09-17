@@ -305,10 +305,10 @@ function displayFullProductDetails(productDetails, localDataUsed) {
             });
 
             // Select the first item (video or image) by default
-            const firstItem = additionalImagesContainer.querySelector('.product-variable');
-            if (firstItem) {
-                updateMainImage(firstItem, additionalImagesContainer);
-            }
+            // const firstItem = additionalImagesContainer.querySelector('.product-variable');
+            // if (firstItem) {
+            //     updateMainImage(firstItem, additionalImagesContainer);
+            // }
         }
     }
 
