@@ -126,6 +126,11 @@
 }
 
 /* <--------------- product page css ---------------->*/
+.available-stock {
+  padding-left: 10px;
+  color: #1F3154; /* Adjust this color to match your design */
+}
+
 .video-product {
   object-fit: cover;
   cursor: pointer;

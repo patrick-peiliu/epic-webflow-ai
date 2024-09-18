@@ -254,6 +254,15 @@ function displayFullProductDetails(productDetails, localDataUsed) {
             specSelectionField.value = specText;
         }
     }
+
+    function updateStockDisplay(skuInfo) {
+        const stockElement = document.getElementById('available-stock');
+        if (stockElement && skuInfo && skuInfo.amountOnSale !== undefined) {
+            stockElement.textContent = skuInfo.amountOnSale.toLocaleString();
+        } else {
+            stockElement.textContent = '  '; // or any default text you prefer
+        }
+    }
     
     // Event listener for additional product images
     if (additionalImagesContainer) {
@@ -368,6 +377,10 @@ function displayFullProductDetails(productDetails, localDataUsed) {
                     this.classList.add('selected');
                     updateMainImage(this.querySelector('.spec-image') || this, additionalImagesContainerVar);
                     updateSpecSelection(this.querySelector('.spec-text').textContent);
+
+                    // Find the corresponding SKU info and update stock display
+                    const selectedIndex = Array.from(additionalImagesContainerVar.querySelectorAll('.spec-container')).indexOf(this);
+                    updateStockDisplay(skuInfo);
                 });
 
                 rowContainer.appendChild(specContainer);
@@ -386,6 +399,9 @@ function displayFullProductDetails(productDetails, localDataUsed) {
         if (initialSelectedSpec) {
             updateSpecSelection(initialSelectedSpec.textContent);
         }
+
+        // Set initial stock amount
+        updateStockDisplay(productDetails.productSkuInfos[0]);
     }
 
     initializeWishlistFeature(productDetails);
