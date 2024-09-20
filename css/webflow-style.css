@@ -749,6 +749,61 @@
   position: relative;
 }
 
+.add-to-wishlist-button {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to right, #00445d 75%, #0277b5 75%); /* Gradient for the two colors */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+  width: 100%; /* Make it responsive */
+  max-width: 250px; /* Adjust as needed */
+  height: 40px; /* Adjust as needed */
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 0 0); /* Shape */
+}
+
+.add-to-wishlist-button:hover {
+  background: linear-gradient(to right, #003349 75%, #015d8e 75%); /* Darker shade for hover effect */
+}
+
+.wishlist-text {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent text from wrapping */
+  flex: 1;
+  text-align: center; /* Center the text */
+  max-width: 75%; /* Ensure text does not overflow */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
+}
+
+.add-remove-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: auto; /* Push the icon to the far right */
+  margin-right: 30px; /* Adjust margin to position the icon correctly */
+}
+
+@media (max-width: 767px) {
+  .add-to-wishlist-button {
+    padding: 10px 0;
+    height: 35px; /* Adjust height for smaller screens */
+  }
+
+  .wishlist-text {
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+
+  .add-remove-icon {
+    width: 16px; /* Adjust icon size for smaller screens */
+    height: 16px; /* Adjust icon size for smaller screens */
+    margin-left: auto; /* Push the icon to the far right */
+    margin-right: 30px; /* Adjust margin to position the icon correctly */
+  }
+}
+
 .wishlist-icon {
   position: absolute;
   top: 10px;
