@@ -22,7 +22,7 @@ function initializeWishlistFeature(productDetails) {
             updateWishlistButton(false);
         } else {
             const specSelectionField = document.querySelector('.spec-container.selected .spec-text');
-            const formatSelectionField = document.querySelector('.format-button.selected');
+            // const formatSelectionField = document.querySelector('.format-button.selected');
             
             // Get the image URL from the currently selected image in additionalImagesContainerVar
             const selectedImageElement = document.querySelector('#product-image-additional-variables .spec-container.selected img');
@@ -37,7 +37,7 @@ function initializeWishlistFeature(productDetails) {
                 imageUrl: imageUrl,
                 subjectTrans: productDetails.subjectTrans,
                 spec: specSelectionField ? specSelectionField.textContent.trim() : '',
-                format: formatSelectionField ? formatSelectionField.textContent.trim() : '',
+                // format: formatSelectionField ? formatSelectionField.textContent.trim() : '',
                 originalUrl: `https://detail.1688.com/offer/${productDetails.offerId}.html`
             });
             updateWishlistButton(true);
@@ -473,37 +473,37 @@ function displayFullProductDetails(productDetails, localDataUsed) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const formatButtons = document.querySelectorAll('.format-button');
-    const formatSelectionField = document.getElementById('format-selection');
+// document.addEventListener('DOMContentLoaded', function() {
+//     const formatButtons = document.querySelectorAll('.format-button');
+//     const formatSelectionField = document.getElementById('format-selection');
     
-    formatButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove 'selected' class from all buttons
-            formatButtons.forEach(btn => btn.classList.remove('selected'));
+//     formatButtons.forEach(button => {
+//         button.addEventListener('click', function() {
+//             // Remove 'selected' class from all buttons
+//             formatButtons.forEach(btn => btn.classList.remove('selected'));
 
-            // Add 'selected' class to clicked button
-            this.classList.add('selected');
+//             // Add 'selected' class to clicked button
+//             this.classList.add('selected');
             
-            // Update the hidden input field with the selected format
-            if (formatSelectionField) {
-                formatSelectionField.value = this.textContent.trim();
-            }
-        });
-    });
-});
+//             // Update the hidden input field with the selected format
+//             if (formatSelectionField) {
+//                 formatSelectionField.value = this.textContent.trim();
+//             }
+//         });
+//     });
+// });
 
-// Optionally, set an initial value for the format selection
-function setInitialFormatSelection() {
-    const formatSelectionField = document.getElementById('format-selection');
-    const initialSelectedButton = document.querySelector('.format-button.selected');
-    if (formatSelectionField && initialSelectedButton) {
-        formatSelectionField.value = initialSelectedButton.textContent.trim();
-    }
-}
+// // Optionally, set an initial value for the format selection
+// function setInitialFormatSelection() {
+//     const formatSelectionField = document.getElementById('format-selection');
+//     const initialSelectedButton = document.querySelector('.format-button.selected');
+//     if (formatSelectionField && initialSelectedButton) {
+//         formatSelectionField.value = initialSelectedButton.textContent.trim();
+//     }
+// }
 
-// Call this function after the DOM is loaded
-setInitialFormatSelection();
+// // Call this function after the DOM is loaded
+// setInitialFormatSelection();
 
 function getWishlist() {
     const wishlistJSON = localStorage.getItem('wishlist');
