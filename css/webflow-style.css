@@ -1006,6 +1006,24 @@ body, html {
   .desktop-content {
     display: none !important; /* Hide the desktop content on mobile */
   }
+
+  .mobile-camera-container {
+    position: relative;
+    text-align: center;
+}
+
+  .mobile-camera-heading {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    font-size: 24px; /* Adjust as needed */
+    font-weight: bold;
+    color: #333; /* Adjust as needed */
+    text-align: center;
+    line-height: 1.5;
+}
 }
 
 .floating-upload-div {
