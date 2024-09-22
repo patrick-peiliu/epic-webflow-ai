@@ -1014,16 +1014,33 @@ body, html {
 
   .mobile-camera-heading {
     position: absolute;
+    margin-top: 0px;
     top: 10px; /* Adjust as needed */
     left: 50%;
     width: 100%;
     transform: translateX(-50%);
     font-size: 24px; /* Adjust as needed */
     font-weight: bold;
-    color: #333; /* Adjust as needed */
+    color: #1d3759; /* Adjust as needed */
     text-align: center;
     line-height: 1.5;
+  }
 }
+
+@media screen and (max-width: 375px) {
+  .mobile-camera-heading {
+    position: absolute;
+    top: 0px; /* Adjust as needed */
+    margin-top: 0px;
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    font-size: 18px; /* Adjust as needed */
+    font-weight: bold;
+    color: #1d3759; /* Adjust as needed */
+    text-align: center;
+    line-height: 1;
+  }
 }
 
 .floating-upload-div {
