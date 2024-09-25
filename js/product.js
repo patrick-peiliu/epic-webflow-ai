@@ -473,6 +473,61 @@ function displayFullProductDetails(productDetails, localDataUsed) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('email-form');
+    const fileInput = document.getElementById('design-file');
+    const fileUploadPlaceholder = document.querySelector('.file-upload-placeholder');
+    const s3UrlInput = document.getElementById('design-file-url'); // Assuming you've added this hidden input to your form
+
+    fileInput.addEventListener('change', async function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            fileUploadPlaceholder.textContent = file.name;
+
+            // Create a new FormData object for just the file
+            const fileFormData = new FormData();
+            fileFormData.append('file', file);
+
+            try {
+                // For production, use:
+                const url = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/fileUpload';
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: fileFormData
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    if (responseData.success) {
+                        // Set the S3 URL to the hidden field
+                        s3UrlInput.value = responseData.result;
+                        fileUploadPlaceholder.textContent = 'File uploaded successfully';
+                    } else {
+                        console.error('File upload failed:', responseData.message);
+                        fileUploadPlaceholder.textContent = responseData.message || 'File upload failed. Please try again.';
+                    }
+                } else {
+                    console.error('File upload request failed');
+                    fileUploadPlaceholder.textContent = 'File upload failed. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                fileUploadPlaceholder.textContent = 'Error uploading file. Please try again.';
+            }
+        } else {
+            fileUploadPlaceholder.innerHTML = '<span class="file-upload-text">Choose file or drag here</span>';
+            s3UrlInput.value = ''; // Clear the S3 URL if no file is selected
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Handle form submission
+        // The S3 URL is already in the hidden field, so you can submit the form as usual
+        // Add your form submission logic here
+    });
+});
+
 // document.addEventListener('DOMContentLoaded', function() {
 //     const formatButtons = document.querySelectorAll('.format-button');
 //     const formatSelectionField = document.getElementById('format-selection');
