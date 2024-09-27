@@ -142,27 +142,28 @@
   cursor: pointer;
 }
 
-.file-upload-label {
-  display: block;
-  width: 100%;
-  padding: 20px;
-  background-color: #f8f8f8;
-  border: 2px dashed #ccc;
+.file-upload-placeholder {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  width: 80%;
+  padding: 12px 16px; /* Adjusted padding */
+  background-color: #f0f0f0; /* Lighter background */
+  border: 1px solid #ccc; /* Solid border instead of dashed */
   border-radius: 4px;
-  text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.file-upload-label:hover {
-  background-color: #f0f0f0;
+.file-upload-placeholder:hover {
+  background-color: #e8e8e8; /* Slightly darker on hover */
   border-color: #999;
 }
 
 .file-upload-text {
-  display: inline-block;
   color: #666;
-  font-weight: bold;
+  font-weight: 500; /* Slightly less bold */
+  text-align: center; /* Ensure text is centered */
 }
 
 .available-stock {
