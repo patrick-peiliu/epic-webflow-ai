@@ -519,13 +519,6 @@ document.addEventListener('DOMContentLoaded', function() {
             s3UrlInput.value = ''; // Clear the S3 URL if no file is selected
         }
     });
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Handle form submission
-        // The S3 URL is already in the hidden field, so you can submit the form as usual
-        // Add your form submission logic here
-    });
 });
 
 // document.addEventListener('DOMContentLoaded', function() {
