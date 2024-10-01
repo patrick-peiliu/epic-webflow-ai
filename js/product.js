@@ -482,7 +482,15 @@ document.addEventListener('DOMContentLoaded', function() {
     fileInput.addEventListener('change', async function(e) {
         if (e.target.files.length > 0) {
             const file = e.target.files[0];
-            fileUploadPlaceholder.textContent = file.name;
+            const maxSizeInBytes = 5 * 1024 * 1024;
+
+            if (file.size > maxSizeInBytes) {
+                fileUploadPlaceholder.textContent = 'Select a file less than 5 MB';
+                fileInput.value = ''; // Clear the file input
+                s3UrlInput.value = ''; // Clear the S3 URL
+                return;
+            }
+            fileUploadPlaceholder.textContent = 'Uploading...';
 
             // Create a new FormData object for just the file
             const fileFormData = new FormData();
