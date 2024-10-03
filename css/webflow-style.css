@@ -126,6 +126,20 @@
 }
 
 /* <--------------- product page css ---------------->*/
+
+.w-radio {
+  display: flex !important;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  width: 50px;
+}
+
+.radio-selection-button {
+  margin-left: 0px!important;
+  margin-right: 8px!important;
+}
+
 .wishlist-button-container {
   display: flex;
   justify-content: flex-start;
@@ -503,11 +517,6 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
     box-sizing: border-box !important;
-  }
-
-  /* Adjust inner elements if necessary */
-  .contact-form.product-order.w-form form {
-    width: 100% !important;
   }
 
   .contact-form.product-order.w-form input,
