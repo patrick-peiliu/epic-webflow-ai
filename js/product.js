@@ -478,6 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('design-file');
     const fileUploadPlaceholder = document.querySelector('.file-upload-placeholder');
     const s3UrlInput = document.getElementById('design-file-url'); // Assuming you've added this hidden input to your form
+    const uploadTrigger = document.querySelector('.upload-trigger');
 
     fileInput.addEventListener('change', async function(e) {
         if (e.target.files.length > 0) {
@@ -523,9 +524,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 fileUploadPlaceholder.textContent = 'Error uploading file. Please try again.';
             }
         } else {
-            fileUploadPlaceholder.innerHTML = '<span class="file-upload-text">Choose file or drag here</span>';
+            fileUploadPlaceholder.textContent = 'Choose file';
             s3UrlInput.value = ''; // Clear the S3 URL if no file is selected
         }
+    });
+
+    uploadTrigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        fileInput.click();
     });
 });
 
