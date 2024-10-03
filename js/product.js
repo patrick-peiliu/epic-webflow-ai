@@ -1,15 +1,15 @@
 function initializeWishlistFeature(productDetails) {
-    const wishlistButton = document.querySelector('.w-layout-hflex.add-to-wishlist-button');
-    const wishlistText = document.getElementById('wishlistText');
-    const addRemoveIcon = document.getElementById('addRemoveIcon');
+    const wishlistButton = document.querySelector('.wishlist-button-container');
+    const wishlistText = wishlistButton.querySelector('.wishlist-button-text');
+    const heartIcon = wishlistButton.querySelector('.wishlist-heart-icon');    
 
     function updateWishlistButton(isWishlisted) {
         if (isWishlisted) {
             wishlistText.textContent = 'Remove from wishlist';
-            addRemoveIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66ed22f656c24937c6d81a57_minus.png';
+            heartIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66a16605ed582742f5697ac1_heart-filled-02.png';
         } else {
             wishlistText.textContent = 'Add to wishlist';
-            addRemoveIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/66ed22f6f93665fd49b04bd9_plus.png';
+            heartIcon.src = 'https://cdn.prod.website-files.com/669bd37b63bfa4c0c5ff7765/669ee220214d380bcfc1f169_heart-icon.png';
         }
     }
 
