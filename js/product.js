@@ -483,45 +483,63 @@ document.addEventListener('DOMContentLoaded', function() {
     fileInput.addEventListener('change', async function(e) {
         if (e.target.files.length > 0) {
             const file = e.target.files[0];
-            const maxSizeInBytes = 5 * 1024 * 1024;
+            const maxSizeInBytes = 10 * 1024 * 1024;
 
             if (file.size > maxSizeInBytes) {
-                fileUploadPlaceholder.textContent = 'Select a file less than 5 MB';
+                fileUploadPlaceholder.textContent = 'Select a file less than 10 MB';
                 fileInput.value = ''; // Clear the file input
                 s3UrlInput.value = ''; // Clear the S3 URL
                 return;
             }
             fileUploadPlaceholder.textContent = 'Uploading...';
 
-            // Create a new FormData object for just the file
-            const fileFormData = new FormData();
-            fileFormData.append('file', file);
-
             try {
-                // For production, use:
-                const url = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/fileUpload';
-                const response = await fetch(url, {
-                    method: 'POST',
-                    body: fileFormData
+                // Step 1: Get pre-signed URL
+                const params = new URLSearchParams({
+                    fileName: file.name,
+                    fileType: file.type
                 });
 
-                if (response.ok) {
-                    const responseData = await response.json();
-                    if (responseData.success) {
-                        // Set the S3 URL to the hidden field
-                        s3UrlInput.value = responseData.result;
-                        fileUploadPlaceholder.textContent = 'File uploaded successfully';
-                    } else {
-                        console.error('File upload failed:', responseData.message);
-                        fileUploadPlaceholder.textContent = responseData.message || 'File upload failed. Please try again.';
-                    }
-                } else {
-                    console.error('File upload request failed');
-                    fileUploadPlaceholder.textContent = 'File upload failed. Please try again.';
+                const presignedUrlResponse = await fetch(`https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/generatePresignedUrl?${params.toString()}`, {
+                    method: 'POST'
+                });
+
+                if (!presignedUrlResponse.ok) {
+                    console.error('Error response:', errorText);
+                    throw new Error(`Failed to get pre-signed URL: ${presignedUrlResponse.status} ${presignedUrlResponse.statusText}`);
                 }
+            
+                const responseData = await presignedUrlResponse.json();
+            
+                if (!responseData.success || responseData.code !== "200" || !responseData.result) {
+                    throw new Error('Invalid response from server');
+                }
+            
+                const fileUrl = responseData.result;
+                // Extract the base URL without query parameters
+                const baseUrl = fileUrl.split('?')[0];
+                // Step 2: Upload file to S3
+                const uploadResponse = await fetch(fileUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: {
+                        'Content-Type': file.type
+                    }
+                });
+            
+                if (!uploadResponse.ok) {
+                    throw new Error(`Failed to upload file to S3: ${uploadResponse.status} ${uploadResponse.statusText}`);
+                }
+
+                // Update UI and form
+                s3UrlInput.value = baseUrl;
+                fileUploadPlaceholder.textContent = 'File uploaded successfully';
+
             } catch (error) {
                 console.error('Error uploading file:', error);
                 fileUploadPlaceholder.textContent = 'Error uploading file. Please try again.';
+                fileInput.value = '';
+                s3UrlInput.value = '';
             }
         } else {
             fileUploadPlaceholder.textContent = 'Choose file';
