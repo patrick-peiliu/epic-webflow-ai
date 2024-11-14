@@ -268,8 +268,8 @@ document.addEventListener('DOMContentLoaded', function() {
 async function sendImageDataAndRedirect(data, isUrl = false) {
     showLoading();
     const uploadEndpoint = isUrl 
-        ? 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
-        : 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/upload';
+        ? 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/imageQuery'
+        : 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/upload';
 
     // Only store lastSearchImage if it's a URL
     if (isUrl) {
@@ -329,7 +329,7 @@ async function sendImageDataAndRedirect(data, isUrl = false) {
                     localStorage.setItem('imageId', imageId);
                     
                     // Send a second request to imageQuery with the received imageId
-                    const imageQueryEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
+                    const imageQueryEndpoint = 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
                     const imageQueryRequestBody = {
                         beginPage: 1,
                         pageSize: 20,
@@ -379,7 +379,7 @@ async function fetchTopKeywords() {
         return;
     }
 
-    const topKeywordEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/topKeyword';
+    const topKeywordEndpoint = 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/topKeyword';
     try {
         const requestBody = {
             "hotKeywordType": "cate",
@@ -499,7 +499,7 @@ async function fetchAndPopulateGallery(forceRefresh = false) {
         }
     }
 
-    const recommendEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/recommend';
+    const recommendEndpoint = 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/recommend';
     const requestBody = {
         "beginPage": 1,
         "pageSize": 5,

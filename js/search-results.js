@@ -111,7 +111,7 @@ async function loadMoreResults(newSearch = false) {
         return;
     }
 
-    const uploadEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
+    const uploadEndpoint = 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/imageQuery';
 
     let requestBody = {
         beginPage: currentPage,

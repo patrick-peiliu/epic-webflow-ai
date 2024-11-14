@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fetchProductDetails(offerId, localDataUsed) {
-    const detailEndpoint = 'https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/detail';
+    const detailEndpoint = 'https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/detail';
     const requestBody = {
         offerId: offerId,
         country: "en"
@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     fileType: file.type
                 });
 
-                const presignedUrlResponse = await fetch(`https://p1fvnvoh6d.execute-api.us-east-1.amazonaws.com/Prod/generatePresignedUrl?${params.toString()}`, {
+                const presignedUrlResponse = await fetch(`https://degmvu0zx6.execute-api.us-east-1.amazonaws.com/Prod/generatePresignedUrl?${params.toString()}`, {
                     method: 'POST'
                 });
 
